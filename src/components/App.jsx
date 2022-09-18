@@ -5,8 +5,6 @@ import { Toaster, toast } from "react-hot-toast";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import Signup from "../Pages/Signup";
-import ChangePicture from "../Pages/ChangePicture";
-import UpdateProfile from "../Pages/UpdateProfile";
 import Profile from "../Pages/Profile";
 import Restore from "../Pages/Restore";
 import Chat from "../Pages/Chat";
@@ -53,8 +51,6 @@ const App = () => {
           />
           <Route path="/restore" element={<Restore />} />
           <Route path="/profile" element={<Profile />} />
-          <Route path="/update-profile" element={<UpdateProfile />} />
-          <Route path="/change-picture" element={<ChangePicture />} />
         </Routes>
       </BrowserRouter>
       <Toaster position="top-center" reverseOrder={false} />

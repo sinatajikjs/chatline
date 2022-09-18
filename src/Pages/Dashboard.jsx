@@ -1,17 +1,17 @@
-import { useEffect, useState } from "react";
+import {  useState } from "react";
 import { HiOutlineLogout } from "react-icons/hi";
 import { AiFillPlusCircle } from "react-icons/ai";
+import { IoTrashOutline } from "react-icons/io5";
 import { Navigate, Link, Outlet, useNavigate } from "react-router-dom";
-import Img from "../assets/user.jpg";
 import { useAuth } from "../Context/AuthContext";
 import useLocalStorage from "../Hooks/useLocalStorage";
 import NewChat from "../components/NewChat";
 
 const Dashboard = ({ setSelectedChat, selectedChat }) => {
-  const [chats, setChats] = useLocalStorage("chats", []);
-  const [modal, setModal] = useState(false);
-
   const { logout, currentUser } = useAuth();
+
+  const [chats, setChats] = useLocalStorage(`chats`, []);
+  const [modal, setModal] = useState(false);
 
   const navigate = useNavigate();
   function selectHandler(e) {
@@ -20,6 +20,14 @@ const Dashboard = ({ setSelectedChat, selectedChat }) => {
     navigate("/chat");
   }
 
+  function deleteHandler(e) {
+    console.log(e.target.dataset.id);
+    localStorage.removeItem(`messanger-${e.target.dataset.id}-messages`);
+    const filteredChats = chats.filter((c) => {
+      return c.uid !== e.target.dataset.id;
+    });
+    setChats(filteredChats);
+  }
   return !currentUser ? (
     <Navigate to={"/"} />
   ) : (
@@ -48,24 +56,39 @@ const Dashboard = ({ setSelectedChat, selectedChat }) => {
         <div className="mt-5 mx-3 border-t">
           {chats.map((c) => {
             return (
-              <div
-                onClick={selectHandler}
-                data-id={c.uid}
-                className="flex items-center py-3 border-b cursor-pointer"
+              <section
                 key={c.uid}
+                className="flex items-center justify-between relative"
               >
-                <img
-                  className="w-14 h-14 rounded-full border-2 border-gray-400 cursor-pointer object-cover"
-                  src={c.photoURL}
+                <div
+                  onClick={selectHandler}
                   data-id={c.uid}
-                />
-                <span className=" ">
-                  <h2 className="text-xl ml-2" data-id={c.uid}>
-                    {c.name}
-                  </h2>
-                  <p data-id={c.uid}>{c.lastMsg}</p>
-                </span>
-              </div>
+                  className="flex items-center 
+                  w-full py-3 border-b cursor-pointer"
+                >
+                  <img
+                    className="w-14 h-14 rounded-full border-2 border-gray-400 cursor-pointer object-cover"
+                    src={c.photoURL}
+                    data-id={c.uid}
+                  />
+                  <span className=" ">
+                    <h2 className="text-xl ml-2" data-id={c.uid}>
+                      {c.name}
+                    </h2>
+                    <p data-id={c.uid}>{c.lastMsg}</p>
+                  </span>
+                </div>
+                <div
+                  onClick={deleteHandler}
+                  data-id={c.uid}
+                  className="absolute right-0 p-3 pr-0 cursor-pointer"
+                >
+                  <IoTrashOutline
+                    data-id={c.uid}
+                    className="text-3xl text-red-500 mr-1"
+                  />
+                </div>
+              </section>
             );
           })}
         </div>

@@ -1,18 +1,10 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { useAuth } from "../Context/AuthContext";
 
-import { auth, db } from "../firebase";
-import {
-  setDoc,
-  doc,
-  Timestamp,
-  collection,
-  query,
-  where,
-  onSnapshot,
-} from "firebase/firestore";
+import { db } from "../firebase";
+import { collection, query, where, onSnapshot } from "firebase/firestore";
 
 const NewChat = ({ chats, setChats, setModal }) => {
   const userNameRef = useRef();

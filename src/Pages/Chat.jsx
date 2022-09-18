@@ -1,9 +1,9 @@
-import { useEffect, useRef, useState } from "react";
-import { Link, Navigate, useNavigate } from "react-router-dom";
+import { useEffect } from "react";
+import { Navigate } from "react-router-dom";
 
 import { useAuth } from "../Context/AuthContext";
 
-import { auth, db } from "../firebase";
+import { db } from "../firebase";
 import { collection, query, where, onSnapshot } from "firebase/firestore";
 import { io } from "socket.io-client";
 import useLocalStorage from "../Hooks/useLocalStorage";
@@ -12,13 +12,14 @@ import Infobar from "../components/Infobar";
 import Messages from "../components/Messages";
 import Input from "../components/Input";
 
-const Chat = ({ selectedChat, setSelectedChat }) => {
+const Chat = ({ selectedChat }) => {
+  const { currentUser, logout } = useAuth();
+
   const [messages, setMessages] = useLocalStorage(
     `${selectedChat}-messages`,
     []
   );
   const [recep, setRecep] = useLocalStorage("Recep", "");
-  const { currentUser, logout } = useAuth();
 
   const socket = io("https://sina-react-api.herokuapp.com", {
     query: { username: currentUser.uid },
