@@ -1,16 +1,21 @@
 import { useRef } from "react";
-import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { useAuth } from "../Context/AuthContext";
-
 import { db } from "../firebase";
-import { collection, query, where, onSnapshot } from "firebase/firestore";
+import {
+  collection,
+  query,
+  where,
+  onSnapshot,
+  doc,
+  setDoc,
+  addDoc,
+} from "firebase/firestore";
 
-const NewChat = ({ chats, setChats, setModal }) => {
+const NewChat = ({ chats, setModal }) => {
   const userNameRef = useRef();
-  const { signup, checkUserEmail, currentUser, checkUsers } = useAuth();
 
-  const navigate = useNavigate();
+  const { currentUser } = useAuth();
 
   function submitHandler(e) {
     e.preventDefault();
@@ -21,30 +26,30 @@ const NewChat = ({ chats, setChats, setModal }) => {
     const usersRef = collection(db, "users");
     const q = query(usersRef, where("email", "==", emailValue));
     onSnapshot(q, (querySnapshot) => {
-      // let Users = [];
       if (querySnapshot.empty) {
         return toast.error("User Does not exist", {
           id: myToast,
         });
       }
-      querySnapshot.forEach((doc) => {
+      querySnapshot.forEach((res) => {
         const userExist = chats.find((u) => {
-          return u.uid === doc.data().uid;
+          return u.uid === res.data().uid;
         });
-        console.log(userExist);
         if (userExist) {
           setModal(false);
           return toast.success("Chat is already Exist", {
             id: myToast,
           });
         }
-        setChats([...chats, doc.data()]);
 
-        toast.success("SuccessFully Added", {
-          id: myToast,
+        setDoc(doc(db, "chats", currentUser.uid, "chats", res.data().uid), {
+          ...res.data(),
+        }).then(() => {
+          setModal(false);
+          toast.success("SuccessFully Added", {
+            id: myToast,
+          });
         });
-
-        setModal(false);
       });
     });
   }

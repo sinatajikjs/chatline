@@ -1,32 +1,57 @@
-import {  useState } from "react";
+import { useEffect, useState } from "react";
 import { HiOutlineLogout } from "react-icons/hi";
 import { AiFillPlusCircle } from "react-icons/ai";
 import { IoTrashOutline } from "react-icons/io5";
 import { Navigate, Link, Outlet, useNavigate } from "react-router-dom";
 import { useAuth } from "../Context/AuthContext";
-import useLocalStorage from "../Hooks/useLocalStorage";
+import { db } from "../firebase";
+import {
+  collection,
+  query,
+  onSnapshot,
+  deleteDoc,
+  getDoc,
+  doc,
+  where,
+} from "firebase/firestore";
 import NewChat from "../components/NewChat";
 
 const Dashboard = ({ setSelectedChat, selectedChat }) => {
   const { logout, currentUser } = useAuth();
 
-  const [chats, setChats] = useLocalStorage(`chats`, []);
+  const [chats, setChats] = useState([]);
   const [modal, setModal] = useState(false);
 
   const navigate = useNavigate();
+
   function selectHandler(e) {
-    setSelectedChat(e.target.dataset.id);
+    setSelectedChat(e.currentTarget.dataset.id);
     console.log(selectedChat);
     navigate("/chat");
   }
 
-  function deleteHandler(e) {
-    console.log(e.target.dataset.id);
-    localStorage.removeItem(`messanger-${e.target.dataset.id}-messages`);
-    const filteredChats = chats.filter((c) => {
-      return c.uid !== e.target.dataset.id;
+  useEffect(() => {
+    const chatsRef = collection(db, "chats", currentUser.uid, "chats");
+    const q = query(chatsRef);
+
+    onSnapshot(q, (querySnapshot) => {
+      let chats = [];
+      querySnapshot.forEach((doc) => {
+        chats.push(doc.data());
+      });
+      setChats(chats);
     });
-    setChats(filteredChats);
+  }, []);
+
+  function deleteHandler(e) {
+    const chatsRef = doc(
+      db,
+      "chats",
+      currentUser.uid,
+      "chats",
+      e.currentTarget.dataset.id
+    );
+    deleteDoc(chatsRef);
   }
   return !currentUser ? (
     <Navigate to={"/"} />
@@ -69,13 +94,10 @@ const Dashboard = ({ setSelectedChat, selectedChat }) => {
                   <img
                     className="w-14 h-14 rounded-full border-2 border-gray-400 cursor-pointer object-cover"
                     src={c.photoURL}
-                    data-id={c.uid}
                   />
                   <span className=" ">
-                    <h2 className="text-xl ml-2" data-id={c.uid}>
-                      {c.name}
-                    </h2>
-                    <p data-id={c.uid}>{c.lastMsg}</p>
+                    <h2 className="text-xl ml-2">{c.name}</h2>
+                    <p>{c.lastMsg}</p>
                   </span>
                 </div>
                 <div
@@ -83,10 +105,7 @@ const Dashboard = ({ setSelectedChat, selectedChat }) => {
                   data-id={c.uid}
                   className="absolute right-0 p-3 pr-0 cursor-pointer"
                 >
-                  <IoTrashOutline
-                    data-id={c.uid}
-                    className="text-3xl text-red-500 mr-1"
-                  />
+                  <IoTrashOutline className="text-3xl text-red-500 mr-1" />
                 </div>
               </section>
             );
