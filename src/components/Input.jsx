@@ -1,27 +1,31 @@
-import { useRef } from "react";
+import { addDoc, collection, Timestamp } from "firebase/firestore";
+import { useRef, useState } from "react";
 import { AiOutlineSend } from "react-icons/ai";
+import { db } from "../firebase";
 
-const Input = ({ setMessages, recep, currentUser, socket, messages }) => {
-  function submitHandler(e) {
-    // messageRef.current.focus();
+const Input = ({ setMessages, recep, currentUser, messages }) => {
 
+  async function submitHandler(e) {
     e.preventDefault();
-    socket.emit(
-      "sendMessage",
-      messageRef.current.value,
-      recep.uid,
-      currentUser.displayName
-    );
-    setMessages([
-      ...messages,
-      {
-        text: messageRef.current.value,
-        id: Date.now(),
-        type: "send",
-        sender: "you",
-      },
-    ]);
+    let inputValue;
+    inputValue = messageRef.current.value;
     messageRef.current.value = "";
+
+    const id =
+      currentUser.uid > recep.uid
+        ? `${currentUser.uid + recep.uid}`
+        : `${recep.uid + currentUser.uid}`;
+
+    let url;
+
+    await addDoc(collection(db, "messages", id, "chat"), {
+      text: inputValue,
+      from: currentUser.uid,
+      to: recep.uid,
+      id: Date.now(),
+      createdAt: Timestamp.fromDate(new Date()),
+      media: url || "",
+    });
   }
 
   const messageRef = useRef();

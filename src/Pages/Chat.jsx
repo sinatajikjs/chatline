@@ -4,26 +4,25 @@ import { Navigate } from "react-router-dom";
 import { useAuth } from "../Context/AuthContext";
 
 import { db } from "../firebase";
-import { collection, query, where, onSnapshot } from "firebase/firestore";
-import { io } from "socket.io-client";
+import {
+  collection,
+  query,
+  where,
+  onSnapshot,
+  orderBy,
+} from "firebase/firestore";
 import useLocalStorage from "../Hooks/useLocalStorage";
 
 import Infobar from "../components/Infobar";
 import Messages from "../components/Messages";
 import Input from "../components/Input";
+import { useState } from "react";
 
 const Chat = ({ selectedChat }) => {
-  const { currentUser, logout } = useAuth();
+  const { currentUser } = useAuth();
 
-  const [messages, setMessages] = useLocalStorage(
-    `${selectedChat}-messages`,
-    []
-  );
-  const [recep, setRecep] = useLocalStorage("Recep", "");
-
-  const socket = io("https://sina-react-api.herokuapp.com", {
-    query: { username: currentUser.uid },
-  });
+  const [messages, setMessages] = useState([]);
+  const [recep, setRecep] = useLocalStorage("recep", "");
 
   useEffect(() => {
     const usersRef = collection(db, "users");
@@ -34,15 +33,27 @@ const Chat = ({ selectedChat }) => {
       });
     });
 
-    socket.on("message", ({ sender, text }) => {
-      setMessages((prevMessages) => {
-        return [
-          ...prevMessages,
-          { text, id: Date.now(), type: "receive", sender },
-        ];
-      });
-    });
+    return () => {
+      localStorage.removeItem("messanger-recep");
+    };
   }, []);
+  useEffect(() => {
+    const id =
+      currentUser.uid > recep.uid
+        ? `${currentUser.uid + recep.uid}`
+        : `${recep.uid + currentUser.uid}`;
+
+    const messagesRef = collection(db, "messages", id, "chat");
+    const messagesQ = query(messagesRef, orderBy("createdAt", "asc"));
+
+    onSnapshot(messagesQ, (querySnapshot) => {
+      let messages = [];
+      querySnapshot.forEach((doc) => {
+        messages.push(doc.data());
+      });
+      setMessages(messages);
+    });
+  }, [recep]);
 
   return !currentUser ? (
     <Navigate to={"/"} />
@@ -53,7 +64,6 @@ const Chat = ({ selectedChat }) => {
       <Input
         setMessages={setMessages}
         recep={recep}
-        socket={socket}
         currentUser={currentUser}
         messages={messages}
       />

@@ -26,7 +26,7 @@ const Dashboard = ({ setSelectedChat, selectedChat }) => {
 
   function selectHandler(e) {
     setSelectedChat(e.currentTarget.dataset.id);
-    console.log(selectedChat);
+    console.log(e.currentTarget.dataset.id);
     navigate("/chat");
   }
 
