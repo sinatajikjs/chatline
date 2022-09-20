@@ -10,6 +10,7 @@ import {
   doc,
   setDoc,
   addDoc,
+  Timestamp,
 } from "firebase/firestore";
 
 const NewChat = ({ chats, setModal }) => {
@@ -42,8 +43,9 @@ const NewChat = ({ chats, setModal }) => {
           });
         }
 
-        setDoc(doc(db, "chats", currentUser.uid, "chats", res.data().uid), {
-          ...res.data(),
+        addDoc(collection(db, "chats", currentUser.uid, "chats"), {
+          id: res.data().uid,
+          createdAt: Timestamp.fromDate(new Date()),
         }).then(() => {
           setModal(false);
           toast.success("SuccessFully Added", {

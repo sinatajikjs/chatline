@@ -13,6 +13,7 @@ import {
   getDoc,
   doc,
   where,
+  orderBy,
 } from "firebase/firestore";
 import NewChat from "../components/NewChat";
 
@@ -32,14 +33,21 @@ const Dashboard = ({ setSelectedChat, selectedChat }) => {
 
   useEffect(() => {
     const chatsRef = collection(db, "chats", currentUser.uid, "chats");
-    const q = query(chatsRef);
+    const q = query(chatsRef, orderBy("createdAt", "asc"));
 
     onSnapshot(q, (querySnapshot) => {
-      let chats = [];
+      let users = [];
       querySnapshot.forEach((doc) => {
-        chats.push(doc.data());
+        const usersRef = collection(db, "users");
+        const q = query(usersRef, where("uid", "==", doc.data().id));
+        onSnapshot(q, (querySnapshot) => {
+          querySnapshot.forEach((doc) => {
+            console.log(doc.data());
+            users.push(doc.data());
+          });
+          setChats(users);
+        });
       });
-      setChats(chats);
     });
   }, []);
 
