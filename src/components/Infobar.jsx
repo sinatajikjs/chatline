@@ -12,7 +12,7 @@ const Infobar = ({ recep }) => {
         className="w-14 h-14 rounded-full object-cover "
         src={recep.photoURL}
       />
-      <h2 className="ml-3 text-white text-2xl pb-1 ">{recep.name}</h2>
+      <h2 className="ml-3 text-white text-2xl">{recep.name}</h2>
     </section>
   );
 };

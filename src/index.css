@@ -10,7 +10,6 @@
 body {
   height: 100vh;
 }
-
 .messages > div::-webkit-scrollbar {
   display: none;
 }
