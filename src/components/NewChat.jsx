@@ -43,7 +43,7 @@ const NewChat = ({ chats, setModal }) => {
           });
         }
 
-        addDoc(collection(db, "chats", currentUser.uid, "chats"), {
+        setDoc(doc(db, "chats", currentUser.uid, "chats", res.data().uid), {
           id: res.data().uid,
           createdAt: Timestamp.fromDate(new Date()),
         }).then(() => {
