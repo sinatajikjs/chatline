@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { HiOutlineLogout } from "react-icons/hi";
 import { AiFillPlusCircle } from "react-icons/ai";
-import { IoTrashOutline } from "react-icons/io5";
 import { Navigate, Link, Outlet, useNavigate } from "react-router-dom";
 import { useAuth } from "../Context/AuthContext";
 import { db } from "../firebase";
@@ -10,12 +9,12 @@ import {
   query,
   onSnapshot,
   deleteDoc,
-  getDoc,
   doc,
   where,
   orderBy,
 } from "firebase/firestore";
 import NewChat from "../components/NewChat";
+import User from "../components/User";
 
 const Dashboard = ({ setSelectedChat, selectedChat }) => {
   const { logout, currentUser } = useAuth();
@@ -27,7 +26,6 @@ const Dashboard = ({ setSelectedChat, selectedChat }) => {
 
   function selectHandler(e) {
     setSelectedChat(e.currentTarget.dataset.id);
-    console.log(e.currentTarget.dataset.id);
     navigate("/chat");
   }
 
@@ -42,7 +40,6 @@ const Dashboard = ({ setSelectedChat, selectedChat }) => {
         const q = query(usersRef, where("uid", "==", doc.data().id));
         onSnapshot(q, (querySnapshot) => {
           querySnapshot.forEach((doc) => {
-            console.log(doc.data());
             users.push(doc.data());
           });
           setChats(users);
@@ -89,33 +86,11 @@ const Dashboard = ({ setSelectedChat, selectedChat }) => {
         <div className="mt-5 mx-3 border-t">
           {chats.map((c) => {
             return (
-              <section
-                key={c.uid}
-                className="flex items-center justify-between relative"
-              >
-                <div
-                  onClick={selectHandler}
-                  data-id={c.uid}
-                  className="flex items-center 
-                  w-full py-3 border-b cursor-pointer"
-                >
-                  <img
-                    className="w-14 h-14 rounded-full border-2 border-gray-400 cursor-pointer object-cover"
-                    src={c.photoURL}
-                  />
-                  <span className=" ">
-                    <h2 className="text-xl ml-2">{c.name}</h2>
-                    <p>{c.lastMsg}</p>
-                  </span>
-                </div>
-                <div
-                  onClick={deleteHandler}
-                  data-id={c.uid}
-                  className="absolute right-0 p-3 pr-0 cursor-pointer"
-                >
-                  <IoTrashOutline className="text-3xl text-red-500 mr-1" />
-                </div>
-              </section>
+              <User
+                c={c}
+                deleteHandler={deleteHandler}
+                selectHandler={selectHandler}
+              />
             );
           })}
         </div>

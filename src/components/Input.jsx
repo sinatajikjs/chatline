@@ -1,19 +1,18 @@
-import { addDoc, collection, Timestamp } from "firebase/firestore";
+import { doc, setDoc, Timestamp, updateDoc } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import { useEffect, useRef, useState } from "react";
-import toast from "react-hot-toast";
+import { useRef, useState } from "react";
 import { AiOutlineSend } from "react-icons/ai";
 import { ImAttachment, ImCross } from "react-icons/im";
 import { db, storage } from "../firebase";
 
-const Input = ({ setMessages, recep, currentUser, messages }) => {
+const Input = ({ recep, currentUser }) => {
   const [img, setImg] = useState(null);
-  const [url, setUrl] = useState(null);
+  const [imgUrl, setImgUrl] = useState(null);
 
   async function submitHandler(e) {
     e.preventDefault();
 
-    setUrl(null);
+    setImgUrl(null);
     let inputValue;
     inputValue = messageRef.current.value;
     messageRef.current.value = "";
@@ -23,10 +22,34 @@ const Input = ({ setMessages, recep, currentUser, messages }) => {
         : `${recep.uid + currentUser.uid}`;
 
     let url;
+    const messageId = Date.now();
 
-    const myToast = toast.loading("Uploading...");
+    const docRef = doc(db, "messages", id, "chat", `${messageId}`);
+    await setDoc(docRef, {
+      text: inputValue,
+      from: currentUser.uid,
+      to: recep.uid,
+      createdAt: Timestamp.fromDate(new Date()),
+      media: {
+        url: imgUrl || "",
+        type: "local",
+      },
+    });
+
+    await setDoc(doc(db, "lastMsg", id), {
+      text: inputValue,
+      from: currentUser.uid,
+      to: recep.uid,
+      createdAt: Timestamp.fromDate(new Date()),
+      media: imgUrl || "",
+      unread: true,
+    })
+      .then(() => console.log("done"))
+      .catch((err) => console.log(err));
 
     if (img) {
+      setImg(null);
+      fileRef.current.value = null;
       const imgRef = ref(
         storage,
         `images/${new Date().getTime()} - ${img.name}`
@@ -34,19 +57,13 @@ const Input = ({ setMessages, recep, currentUser, messages }) => {
       const snap = await uploadBytes(imgRef, img);
       const dlUrl = await getDownloadURL(ref(storage, snap.ref.fullPath));
       url = dlUrl;
+      updateDoc(docRef, {
+        media: {
+          url,
+          type: "public",
+        },
+      });
     }
-
-    await addDoc(collection(db, "messages", id, "chat"), {
-      text: inputValue,
-      from: currentUser.uid,
-      to: recep.uid,
-      id: Date.now(),
-      createdAt: Timestamp.fromDate(new Date()),
-      media: url || "",
-    });
-    toast.dismiss(myToast);
-    fileRef.current.value = null;
-    setImg(null);
   }
 
   const messageRef = useRef();
@@ -54,21 +71,21 @@ const Input = ({ setMessages, recep, currentUser, messages }) => {
 
   const changeHandler = (e) => {
     setImg(e.target.files[0]);
-    setUrl(URL.createObjectURL(e.target.files[0]));
+    setImgUrl(URL.createObjectURL(e.target.files[0]));
   };
   return (
     <form
       onSubmit={submitHandler}
       className="fixed bottom-0 pb-3 flex items-center justify-center w-screen px-4 mt-5 bg-gray-300"
     >
-      {url ? (
+      {imgUrl ? (
         <>
           <label
             htmlFor="file"
             className="cursor-pointer absolute left-0 ml-1 mb-32 p-1  rounded-xl bg-white border-2 border-gray-400"
           >
             <img
-              src={url}
+              src={imgUrl}
               className="h-14 w-14 object-cover rounded-lg"
               alt=""
             />
@@ -76,7 +93,7 @@ const Input = ({ setMessages, recep, currentUser, messages }) => {
           <div
             onClick={() => {
               setImg(null);
-              setUrl(null);
+              setImgUrl(null);
             }}
             className=" w-11 h-11 mr-2 bg-red-500 flex items-center justify-center cursor-pointer rounded-full"
           >
@@ -105,7 +122,7 @@ const Input = ({ setMessages, recep, currentUser, messages }) => {
         name="message"
         type="text"
         ref={messageRef}
-        required={!url}
+        required={!imgUrl}
         autoComplete="off"
         placeholder="Message"
         className="w-[calc(100%_-_94px)] border-stone-400 rounded-full text-lg h-11 px-2 py-1 outline-none"
