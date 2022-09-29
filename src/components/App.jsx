@@ -10,9 +10,11 @@ import Restore from "../Pages/Restore";
 import Chat from "../Pages/Chat";
 import Dashboard from "../Pages/Dashboard";
 import Login from "../Pages/Login";
+import useLocalStorage from "../Hooks/useLocalStorage";
 
 const App = () => {
   const [selectedChat, setSelectedChat] = useState("");
+  const [recep, setRecep] = useLocalStorage("recep", "");
 
   const getCountry = async () => {
     const res = await axios.get("https://geolocation-db.com/json/");
@@ -35,6 +37,7 @@ const App = () => {
             path="/dashboard"
             element={
               <Dashboard
+                setRecep={setRecep}
                 selectedChat={selectedChat}
                 setSelectedChat={setSelectedChat}
               />
@@ -44,6 +47,7 @@ const App = () => {
             path="/chat"
             element={
               <Chat
+                recep={recep}
                 selectedChat={selectedChat}
                 setSelectedChat={setSelectedChat}
               />

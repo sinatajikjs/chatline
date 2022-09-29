@@ -29,11 +29,13 @@ const Input = ({ recep, currentUser }) => {
       text: inputValue,
       from: currentUser.uid,
       to: recep.uid,
+      time: messageId,
       createdAt: Timestamp.fromDate(new Date()),
       media: {
         url: imgUrl || "",
         type: "local",
       },
+      seen: false,
     });
 
     await setDoc(doc(db, "lastMsg", id), {
@@ -92,6 +94,7 @@ const Input = ({ recep, currentUser }) => {
           </label>
           <div
             onClick={() => {
+              fileRef.current.value = "";
               setImg(null);
               setImgUrl(null);
             }}

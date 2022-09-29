@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { HiOutlineLogout } from "react-icons/hi";
 import { AiFillPlusCircle } from "react-icons/ai";
-import { Navigate, Link, Outlet, useNavigate } from "react-router-dom";
+import { Navigate, Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../Context/AuthContext";
 import { db } from "../firebase";
 import {
@@ -16,7 +16,7 @@ import {
 import NewChat from "../components/NewChat";
 import User from "../components/User";
 
-const Dashboard = ({ setSelectedChat, selectedChat }) => {
+const Dashboard = ({ setRecep }) => {
   const { logout, currentUser } = useAuth();
 
   const [chats, setChats] = useState([]);
@@ -25,8 +25,14 @@ const Dashboard = ({ setSelectedChat, selectedChat }) => {
   const navigate = useNavigate();
 
   function selectHandler(e) {
-    setSelectedChat(e.currentTarget.dataset.id);
-    navigate("/chat");
+    const usersRef = collection(db, "users");
+    const q = query(usersRef, where("uid", "==", e.currentTarget.dataset.id));
+    onSnapshot(q, (querySnapshot) => {
+      querySnapshot.forEach((doc) => {
+        setRecep(doc.data());
+        navigate("/chat");
+      });
+    });
   }
 
   useEffect(() => {
@@ -88,6 +94,7 @@ const Dashboard = ({ setSelectedChat, selectedChat }) => {
             return (
               <User
                 c={c}
+                key={c.id}
                 deleteHandler={deleteHandler}
                 selectHandler={selectHandler}
               />

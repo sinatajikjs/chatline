@@ -10,34 +10,21 @@ import {
   where,
   onSnapshot,
   orderBy,
+  updateDoc,
 } from "firebase/firestore";
-import useLocalStorage from "../Hooks/useLocalStorage";
 
 import Infobar from "../components/Infobar";
 import Messages from "../components/Messages";
 import Input from "../components/Input";
 import { useState } from "react";
 
-const Chat = ({ selectedChat }) => {
+const Chat = ({ recep }) => {
   const { currentUser } = useAuth();
-
   const [messages, setMessages] = useState([]);
-  const [recep, setRecep] = useLocalStorage("recep", "");
 
   useEffect(() => {
-    const usersRef = collection(db, "users");
-    const q = query(usersRef, where("uid", "==", selectedChat));
-    onSnapshot(q, (querySnapshot) => {
-      querySnapshot.forEach((doc) => {
-        setRecep(doc.data());
-      });
-    });
+    let isMounted = true;
 
-    return () => {
-      localStorage.removeItem("messanger-recep");
-    };
-  }, []);
-  useEffect(() => {
     const id =
       currentUser.uid > recep.uid
         ? `${currentUser.uid + recep.uid}`
@@ -53,9 +40,29 @@ const Chat = ({ selectedChat }) => {
       });
       setMessages(messages);
     });
-  }, [recep]);
 
-  return !currentUser ? (
+    const receivedMessages = query(
+      messagesRef,
+      where("to", "==", currentUser.uid)
+    );
+
+    onSnapshot(receivedMessages, (querySnapshot) => {
+      querySnapshot.forEach((doc) => {
+        if (isMounted) {
+          updateDoc(doc.ref, {
+            seen: true,
+          });
+        }
+      });
+    });
+
+    return () => {
+      isMounted = false;
+      localStorage.removeItem("messanger-recep");
+    };
+  }, []);
+
+  return !currentUser || !recep ? (
     <Navigate to={"/"} />
   ) : (
     <div className="bg-gray-300 absolute top-0 w-screen h-full overflow-hidden ">
