@@ -1,4 +1,4 @@
-import { AuthProvider } from "../Context/AuthContext";
+import { AuthProvider, useAuth } from "../Context/AuthContext";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import { Toaster, toast } from "react-hot-toast";
@@ -11,10 +11,13 @@ import Chat from "../Pages/Chat";
 import Dashboard from "../Pages/Dashboard";
 import Login from "../Pages/Login";
 import useLocalStorage from "../Hooks/useLocalStorage";
+import { auth, db } from "../firebase";
+import { doc, updateDoc } from "firebase/firestore";
 
 const App = () => {
   const [selectedChat, setSelectedChat] = useState("");
   const [recep, setRecep] = useLocalStorage("recep", "");
+  const [currentUser, setCurrentUser] = useState(null);
 
   const getCountry = async () => {
     const res = await axios.get("https://geolocation-db.com/json/");
@@ -25,7 +28,34 @@ const App = () => {
     getCountry().then((res) => {
       if (res === "IR") toast.error("Turn On Your VPN!");
     });
+    auth.onAuthStateChanged((user) => {
+      setCurrentUser(user);
+      const currentUserRef = doc(db, "users", user.uid);
+      updateDoc(currentUserRef, {
+        isOnline: true,
+      });
+    });
   }, []);
+
+  if (currentUser) {
+    const currentUserRef = doc(db, "users", currentUser.uid);
+    window.addEventListener("beforeunload", function (e) {
+      updateDoc(currentUserRef, {
+        isOnline: Date.now(),
+      });
+    });
+
+    document.addEventListener(
+      "visibilitychange",
+      function () {
+        updateDoc(currentUserRef, {
+          isOnline: document.hidden ? Date.now() : true,
+        });
+        console.log(document.hidden, document.visibilityState);
+      },
+      false
+    );
+  }
 
   return (
     <AuthProvider>

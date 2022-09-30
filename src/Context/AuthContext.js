@@ -8,9 +8,9 @@ import {
   query,
   where,
   onSnapshot,
+  updateDoc,
 } from "firebase/firestore";
 import { updateProfile, updateProfileInfo } from "firebase/auth";
-import { ref, getStorage, getDownloadURL } from "firebase/storage";
 
 const AuthContext = React.createContext();
 
@@ -39,6 +39,7 @@ export function AuthProvider({ children }) {
         name,
         email,
         createdAt: Timestamp.fromDate(new Date()),
+        isOnline: false,
       });
     });
   }
@@ -62,7 +63,11 @@ export function AuthProvider({ children }) {
     return auth.signInWithEmailAndPassword(email, password);
   }
 
-  function logout() {
+  async function logout() {
+    const currentUserRef = doc(db, "users", currentUser.uid);
+    await updateDoc(currentUserRef, {
+      isOnline: Date.now(),
+    });
     return auth.signOut();
   }
 
@@ -87,7 +92,6 @@ export function AuthProvider({ children }) {
       setCurrentUser(user);
       setLoading(false);
     });
-
     return unsubscribe;
   }, []);
 

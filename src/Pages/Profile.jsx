@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { Link, Navigate, useNavigate } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { useAuth } from "../Context/AuthContext";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { db, storage } from "../firebase";
@@ -9,8 +9,6 @@ import { doc, updateDoc } from "firebase/firestore";
 const Profile = () => {
   const { currentUser, updateProfileInfo } = useAuth();
   const [img, setImg] = useState(currentUser.photoURL);
-
-  const navigate = useNavigate();
 
   function changeHandler(e) {
     const myToast = toast.loading("Uploading...");
@@ -33,17 +31,10 @@ const Profile = () => {
           .catch((err) => console.log(err, "its about update profile"));
       } catch (err) {
         toast.error("Failed to Upload", { id: myToast });
-
-        console.log(err.message);
       }
-      // navigate("/dashboard")
     };
     uploadImg();
   }
-
-  useEffect(() => {
-    console.log(currentUser.metadata.createdAt);
-  }, []);
 
   return !currentUser ? (
     <Navigate to="/" />

@@ -45,16 +45,14 @@ const Messages = ({ messages }) => {
                   />
                 ))}
 
-              <div className="flex pb-1.5">
-                {m.text && (
-                  <h2
-                    className={`px-3 text-md text-white  ${
-                      m.media.url || "pt-1"
-                    }`}
-                  >
-                    {m.text}
-                  </h2>
-                )}
+              <div className="flex pb-1.5 justify-between">
+                <h2
+                  className={`px-3 text-md text-white  ${
+                    m.media.url || "pt-1"
+                  }`}
+                >
+                  {m.text}
+                </h2>
                 <div className="pr-2 flex justify-end items-end text-blue-300">
                   <p
                     className={`text-xs font-semibold mr-1 ${

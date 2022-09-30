@@ -9,6 +9,9 @@ const Input = ({ recep, currentUser }) => {
   const [img, setImg] = useState(null);
   const [imgUrl, setImgUrl] = useState(null);
 
+  const messageRef = useRef();
+  const fileRef = useRef();
+
   async function submitHandler(e) {
     e.preventDefault();
 
@@ -45,9 +48,7 @@ const Input = ({ recep, currentUser }) => {
       createdAt: Timestamp.fromDate(new Date()),
       media: imgUrl || "",
       unread: true,
-    })
-      .then(() => console.log("done"))
-      .catch((err) => console.log(err));
+    });
 
     if (img) {
       setImg(null);
@@ -68,13 +69,11 @@ const Input = ({ recep, currentUser }) => {
     }
   }
 
-  const messageRef = useRef();
-  const fileRef = useRef();
-
   const changeHandler = (e) => {
     setImg(e.target.files[0]);
     setImgUrl(URL.createObjectURL(e.target.files[0]));
   };
+
   return (
     <form
       onSubmit={submitHandler}

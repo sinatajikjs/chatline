@@ -12,6 +12,7 @@ import {
   doc,
   where,
   orderBy,
+  updateDoc,
 } from "firebase/firestore";
 import NewChat from "../components/NewChat";
 import User from "../components/User";

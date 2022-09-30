@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { BsArrowLeftShort } from "react-icons/bs";
 import { Link } from "react-router-dom";
 
@@ -12,7 +11,16 @@ const Infobar = ({ recep }) => {
         className="w-14 h-14 rounded-full object-cover "
         src={recep.photoURL}
       />
-      <h2 className="ml-3 text-white text-2xl">{recep.name}</h2>
+      <div className="ml-3 flex flex-col">
+        <h2 className="text-white text-2xl">{recep.name}</h2>
+        <p className="text-teal-300">
+          {recep.isOnline === true
+            ? "online"
+            : `Last seen at ${new Date(recep.isOnline)
+                .toTimeString()
+                .substring(0, 5)}`}
+        </p>
+      </div>
     </section>
   );
 };
