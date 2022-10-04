@@ -10,3 +10,7 @@
 .messages > div::-webkit-scrollbar {
   display: none;
 }
+.messages > div {
+  width: 100%;
+  overflow-x: hidden;
+}

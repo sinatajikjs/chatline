@@ -2,23 +2,30 @@ import { doc, setDoc, Timestamp, updateDoc } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { useRef, useState } from "react";
 import { AiOutlineSend } from "react-icons/ai";
+import { MdReply } from "react-icons/md";
+import { IoMdClose } from "react-icons/io";
 import { ImAttachment, ImCross } from "react-icons/im";
 import { db, storage } from "../firebase";
 
-const Input = ({ recep, currentUser }) => {
+const Input = ({ recep, currentUser, inputRef, reply, setReply }) => {
   const [img, setImg] = useState(null);
   const [imgUrl, setImgUrl] = useState(null);
 
-  const messageRef = useRef();
   const fileRef = useRef();
 
   async function submitHandler(e) {
-    e.preventDefault();
+    e && e.preventDefault();
+    inputRef.current.focus();
+
+    if (!inputRef.current.value && !imgUrl) return;
 
     setImgUrl(null);
+    setReply(null);
+
     let inputValue;
-    inputValue = messageRef.current.value;
-    messageRef.current.value = "";
+
+    inputValue = inputRef.current.value;
+    inputRef.current.value = "";
     const id =
       currentUser.uid > recep.uid
         ? `${currentUser.uid + recep.uid}`
@@ -31,6 +38,7 @@ const Input = ({ recep, currentUser }) => {
     await setDoc(docRef, {
       text: inputValue,
       from: currentUser.uid,
+      senderName: currentUser.displayName,
       to: recep.uid,
       time: messageId,
       createdAt: Timestamp.fromDate(new Date()),
@@ -38,6 +46,7 @@ const Input = ({ recep, currentUser }) => {
         url: imgUrl || "",
         type: "local",
       },
+      replyTo: reply,
       seen: false,
     });
 
@@ -73,6 +82,11 @@ const Input = ({ recep, currentUser }) => {
     setImg(e.target.files[0]);
     setImgUrl(URL.createObjectURL(e.target.files[0]));
   };
+
+  function touchEndHandler(e) {
+    e.preventDefault();
+    submitHandler();
+  }
 
   return (
     <form
@@ -120,18 +134,48 @@ const Input = ({ recep, currentUser }) => {
         id="file"
         className="hidden"
       />
-      <input
-        name="message"
-        type="text"
-        ref={messageRef}
-        required={!imgUrl}
-        autoComplete="off"
-        placeholder="Message"
-        className="w-[calc(100%_-_94px)] border-stone-400 rounded-full text-lg h-11 px-2 py-1 outline-none"
-      />
+      <div className="w-[calc(100%_-_94px)] relative">
+        <input
+          name="message"
+          type="text"
+          ref={inputRef}
+          required={!imgUrl}
+          autoComplete="off"
+          placeholder="Message"
+          className={`w-full relative z-10 rounded-xl ${
+            reply && "rounded-t-none"
+          } border-stone-400 text-lg h-11 px-2 py-1 outline-none transition-all duration-200`}
+        />
+        <div
+          className={`flex justify-between items-center px-3 absolute rounded-xl border-b w-full ${
+            reply ? "-top-12 h-12 rounded-b-none" : "-top-0 h-11"
+          } bg-white transition-all`}
+        >
+          <div className="flex items-center">
+            <MdReply className="-scale-x-100 text-teal-600 text-2xl" />
+            <div className="ml-3">
+              <h2 className="text-teal-600 font-medium">
+                {reply && reply.senderName}
+              </h2>
+              <p className="text-sm">{(reply && reply.text) || "Photo"}</p>
+            </div>
+          </div>
+          <IoMdClose
+            onClick={() => {
+              inputRef.current.focus();
+              setReply(null);
+            }}
+            onTouchEnd={(e) => {
+              e.preventDefault();
+              setReply(null);
+            }}
+            className="text-2xl text-teal-600 box-content cursor-pointer p-2 pr-0"
+          />
+        </div>
+      </div>
       <button
         type="submit"
-        onClick={() => messageRef.current.focus()}
+        onTouchEnd={touchEndHandler}
         className="ml-2 bg-teal-600 rounded-full p-2"
       >
         <AiOutlineSend className="text-white rounded-full text-3xl" />

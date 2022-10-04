@@ -51,7 +51,6 @@ const App = () => {
         updateDoc(currentUserRef, {
           isOnline: document.hidden ? Date.now() : true,
         });
-        console.log(document.hidden, document.visibilityState);
       },
       false
     );

@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { Navigate } from "react-router-dom";
 
 import { useAuth } from "../Context/AuthContext";
@@ -22,6 +22,7 @@ import { useState } from "react";
 const Chat = ({ recep }) => {
   const { currentUser } = useAuth();
   const [messages, setMessages] = useState([]);
+  const [reply, setReply] = useState(null);
 
   useEffect(() => {
     let isMounted = true;
@@ -63,17 +64,29 @@ const Chat = ({ recep }) => {
     };
   }, []);
 
+  const inputRef = useRef();
+
   return !currentUser || !recep ? (
     <Navigate to={"/"} />
   ) : (
     <div className="bg-gray-300 absolute top-0 w-screen h-full overflow-hidden ">
       <Infobar recep={recep} />
-      <Messages messages={messages} />
+      <Messages
+        recep={recep}
+        currentUser={currentUser}
+        setReply={setReply}
+        reply={reply}
+        inputRef={inputRef}
+        messages={messages}
+      />
       <Input
+        inputRef={inputRef}
         setMessages={setMessages}
         recep={recep}
         currentUser={currentUser}
         messages={messages}
+        setReply={setReply}
+        reply={reply}
       />
     </div>
   );
