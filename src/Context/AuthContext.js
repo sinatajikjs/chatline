@@ -9,6 +9,8 @@ import {
   where,
   onSnapshot,
   updateDoc,
+  getDoc,
+  getDocs,
 } from "firebase/firestore";
 import { updateProfile, updateProfileInfo } from "firebase/auth";
 
@@ -20,6 +22,7 @@ export function useAuth() {
 
 export function AuthProvider({ children }) {
   const [currentUser, setCurrentUser] = useState();
+  const [user, setUser] = useState(null);
 
   const [loading, setLoading] = useState(true);
 
@@ -44,19 +47,44 @@ export function AuthProvider({ children }) {
     });
   }
 
-  function checkUsers(email) {
-    let user;
-    const usersRef = collection(db, "users");
-    const q = query(usersRef, where("email", "==", email));
-    onSnapshot(q, (querySnapshot) => {
-      querySnapshot.forEach((doc) => {
-        user = doc.data();
-      });
-    });
-  }
+  // function checkUsers(email) {
+  //   let user;
+  //   const usersRef = collection(db, "users");
+  //   const q = query(usersRef, where("email", "==", email));
+  //   onSnapshot(q, (querySnapshot) => {
+  //     querySnapshot.forEach((doc) => {
+  //       user = doc.data();
+  //     });
+  //   });
+  // }
 
   function checkUserEmail(email) {
     return auth.fetchSignInMethodsForEmail(email);
+  }
+
+  async function checkUsername(username) {
+    const userRef = doc(db, "users", currentUser.uid);
+    const thisUser = (await getDoc(userRef)).data();
+    if (thisUser.username === username) return false;
+
+    const usersRef = collection(db, "users");
+    const q = query(usersRef, where("username", "==", username));
+    const querySnapshot = await getDocs(q);
+    let user;
+    querySnapshot.forEach((doc) => {
+      user = doc.data();
+    });
+    return user;
+  }
+
+  function updateUsername(uid, username) {
+    const usersRef = doc(db, "users", uid);
+    return updateDoc(usersRef, { username }).then(() => setUser({ username }));
+  }
+
+  async function getUser(uid) {
+    const usersRef = doc(db, "users", uid);
+    return (await getDoc(usersRef)).data();
   }
 
   function login(email, password) {
@@ -95,6 +123,10 @@ export function AuthProvider({ children }) {
     return unsubscribe;
   }, []);
 
+  useEffect(() => {
+    if (currentUser) getUser(currentUser.uid).then((res) => setUser(res));
+  }, [currentUser]);
+
   const value = {
     currentUser,
     login,
@@ -105,7 +137,10 @@ export function AuthProvider({ children }) {
     updatePassword,
     checkUserEmail,
     updateProfileInfo,
-    checkUsers,
+    checkUsername,
+    updateUsername,
+    getUser,
+    user,
   };
 
   return (

@@ -5,17 +5,18 @@ import { Toaster, toast } from "react-hot-toast";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import Signup from "../Pages/Signup";
-import Profile from "../Pages/Profile";
+import UpdateProfile from "../Pages/UpdateProfile";
 import Restore from "../Pages/Restore";
 import Chat from "../Pages/Chat";
 import Dashboard from "../Pages/Dashboard";
 import Login from "../Pages/Login";
 import useLocalStorage from "../Hooks/useLocalStorage";
 import { auth, db } from "../firebase";
-import { doc, updateDoc } from "firebase/firestore";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
+import Username from "../Pages/Username";
+import Profile from "../Pages/Profile";
 
 const App = () => {
-  const [selectedChat, setSelectedChat] = useState("");
   const [recep, setRecep] = useLocalStorage("recep", "");
   const [currentUser, setCurrentUser] = useState(null);
 
@@ -64,26 +65,13 @@ const App = () => {
           <Route path="/signup" element={<Signup />} />
           <Route
             path="/dashboard"
-            element={
-              <Dashboard
-                setRecep={setRecep}
-                selectedChat={selectedChat}
-                setSelectedChat={setSelectedChat}
-              />
-            }
+            element={<Dashboard setRecep={setRecep} />}
           />
-          <Route
-            path="/chat"
-            element={
-              <Chat
-                recep={recep}
-                selectedChat={selectedChat}
-                setSelectedChat={setSelectedChat}
-              />
-            }
-          />
+          <Route path="/chat" element={<Chat recep={recep} />} />
           <Route path="/restore" element={<Restore />} />
+          <Route path="/username" element={<Username />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/update-profile" element={<UpdateProfile />} />
         </Routes>
       </BrowserRouter>
       <Toaster position="top-center" reverseOrder={false} />

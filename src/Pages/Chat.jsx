@@ -19,7 +19,7 @@ import Messages from "../components/Messages";
 import Input from "../components/Input";
 import { useState } from "react";
 
-const Chat = ({ recep }) => {
+const Chat = ({ recep, user }) => {
   const { currentUser } = useAuth();
   const [messages, setMessages] = useState([]);
   const [reply, setReply] = useState(null);
@@ -65,14 +65,16 @@ const Chat = ({ recep }) => {
   }, []);
 
   const inputRef = useRef();
+  const scrollToDivRef = useRef();
 
-  return !currentUser || !recep ? (
-    <Navigate to={"/"} />
+  return !currentUser || !recep || (user && user.username) ? (
+    <Navigate to="/" />
   ) : (
     <div className="bg-gray-300 absolute top-0 w-screen h-full overflow-hidden ">
       <Infobar recep={recep} />
       <Messages
         recep={recep}
+        scrollToDivRef={scrollToDivRef}
         currentUser={currentUser}
         setReply={setReply}
         reply={reply}
@@ -83,6 +85,7 @@ const Chat = ({ recep }) => {
         inputRef={inputRef}
         setMessages={setMessages}
         recep={recep}
+        scrollToDivRef={scrollToDivRef}
         currentUser={currentUser}
         messages={messages}
         setReply={setReply}

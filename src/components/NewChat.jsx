@@ -14,18 +14,18 @@ import {
 } from "firebase/firestore";
 
 const NewChat = ({ chats, setModal }) => {
-  const userNameRef = useRef();
+  const usernameRef = useRef();
 
   const { currentUser } = useAuth();
 
   function submitHandler(e) {
     e.preventDefault();
-    const emailValue = userNameRef.current.value;
+    const usernameValue = usernameRef.current.value;
 
     const myToast = toast.loading("Adding...");
 
     const usersRef = collection(db, "users");
-    const q = query(usersRef, where("email", "==", emailValue));
+    const q = query(usersRef, where("username", "==", usernameValue));
     onSnapshot(q, (querySnapshot) => {
       if (querySnapshot.empty) {
         return toast.error("User Does not exist", {
@@ -79,7 +79,7 @@ const NewChat = ({ chats, setModal }) => {
             type="text"
             required
             name="text"
-            ref={userNameRef}
+            ref={usernameRef}
           />
         </div>
         <button
