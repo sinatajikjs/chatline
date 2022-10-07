@@ -7,16 +7,16 @@ import "react-loading-skeleton/dist/skeleton.css";
 import { useState } from "react";
 import { useEffect } from "react";
 import { useRef } from "react";
+import ScrollToBottom from "react-scroll-to-bottom";
 
 const Messages = ({ messages, inputRef, reply, setReply, scrollToDivRef }) => {
   const { currentUser } = useAuth();
   const [touched, setTouched] = useState(0);
   const [vibrate, setVibrate] = useState(false);
   const [isHorzMoved, setIsHorzMoved] = useState(false);
-  const [bottom, setBottom] = useState(false);
+  const [bottom, setBottom] = useState(true);
 
   const msgRef = useRef();
-  const messagesRef = useRef();
 
   function touchMoveHandler(e) {
     const horzMoved = Math.round(e.touches[0].clientX) - touched.x;
@@ -74,19 +74,18 @@ const Messages = ({ messages, inputRef, reply, setReply, scrollToDivRef }) => {
   }
   function handleScroll(e) {
     const bottom =
-      e.target.scrollHeight - e.target.scrollTop < e.target.clientHeight + 200;
+      e.target.scrollHeight - e.target.scrollTop === e.target.clientHeight;
     if (bottom) {
       setBottom(true);
     } else setBottom(false);
   }
 
   useEffect(() => {
-    if (!messages) return;
-    const resizeObserver = new ResizeObserver(() => {
-      scrollToBottom();
-    });
-    resizeObserver.observe(messagesRef.current);
-  }, [messages]);
+    const scrollerDiv = document
+      .querySelector(".scrollerDiv")
+      .querySelector("div");
+    scrollerDiv.addEventListener("scroll", handleScroll);
+  }, []);
 
   useEffect(() => {
     if (vibrate === true) {
@@ -96,13 +95,12 @@ const Messages = ({ messages, inputRef, reply, setReply, scrollToDivRef }) => {
 
   return (
     <div
-      ref={messagesRef}
       onScroll={handleScroll}
       className={`messages overflow-auto px-3 mt-20 flex flex-col relative overflow-auto ${
-        reply ? "h-[calc(100vh_-_192px)]" : "h-[calc(100vh_-_148px)]"
+        reply ? "h-[calc(100%_-_192px)]" : "h-[calc(100%_-_148px)]"
       } hide-scroll-bar transition-all`}
     >
-      <div>
+      <ScrollToBottom className={`h-full scrollerDiv`}>
         {messages.map((m) => {
           return (
             <div
@@ -111,7 +109,7 @@ const Messages = ({ messages, inputRef, reply, setReply, scrollToDivRef }) => {
               onTouchMove={touchMoveHandler}
               onTouchStart={touchStartHandler}
               onTouchEnd={touchEndHandler}
-              key={m.id}
+              key={m.time}
               className={`relative overflow-visible mt-2 flex transition-all duration-500 ${
                 m.from === currentUser.uid
                   ? "chat-rtl justify-end"
@@ -194,14 +192,14 @@ const Messages = ({ messages, inputRef, reply, setReply, scrollToDivRef }) => {
             </div>
           );
         })}
-      </div>
-      <IoIosArrowDown
-        className={`fixed bottom-0 right-0 box-content text-white text-2xl z-20 mr-4 mb-[4.5rem] bg-slate-700 p-1.5 rounded-full cursor-pointer ${
-          bottom ? "opacity-0" : "opacity-100"
-        } transition-all`}
-        onClick={scrollToBottom}
-      />
-      <div ref={scrollToDivRef}></div>
+        <div ref={scrollToDivRef}></div>
+        <IoIosArrowDown
+          className={`fixed bottom-0 right-0 box-content text-white text-2xl z-20 mr-4 mb-[4.5rem] bg-slate-700 p-1.5 rounded-full cursor-pointer ${
+            bottom ? "opacity-0" : "opacity-100"
+          } transition-all`}
+          onClick={scrollToBottom}
+        />
+      </ScrollToBottom>
     </div>
   );
 };

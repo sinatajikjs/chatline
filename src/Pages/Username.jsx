@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
-import { Navigate, useNavigate } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import { useAuth } from "../Context/AuthContext";
 
 const Username = () => {
@@ -23,7 +23,6 @@ const Username = () => {
         ? toast.error("Username is Taken", { id: myToast })
         : updateUsername(currentUser.uid, inputValue).then(() => {
             toast.dismiss(myToast);
-            console.log(user.username);
             if (user.username) return navigate("/dashboard");
             navigate("/profile");
           })
@@ -74,6 +73,12 @@ const Username = () => {
         >
           Next
         </button>
+
+        {user && user.username && (
+          <Link to="/dashboard" className="mt-2 text-blue-600 underline">
+            Cancel
+          </Link>
+        )}
       </form>
     </div>
   );

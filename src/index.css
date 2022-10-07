@@ -7,16 +7,20 @@
 .chat-rtl {
   direction: ltr;
 }
-/* .messages > div::-webkit-scrollbar {
-  display: none;
-} */
+
 .messages::-webkit-scrollbar {
   display: none;
 }
-/* .messages > div {
+.scrollerDiv > div::-webkit-scrollbar {
+  display: none;
+}
+.scrollerDiv > div {
   width: 100%;
   overflow-x: hidden;
-} */
+}
+.scrollerDiv > button {
+  display: none;
+}
 .messages {
   width: 100%;
   overflow-x: hidden;

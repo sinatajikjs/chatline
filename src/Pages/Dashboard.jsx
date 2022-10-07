@@ -33,34 +33,33 @@ const Dashboard = ({ setRecep }) => {
     navigate("/chat");
   }
 
-  useEffect(() => {
+  function getChats() {
     const chatsRef = collection(db, "chats", currentUser.uid, "chats");
     const q = query(chatsRef, orderBy("createdAt", "asc"));
 
     onSnapshot(q, (querySnapshot) => {
       let users = [];
-      querySnapshot.forEach((doc) => {
-        const usersRef = collection(db, "users");
-        const q = query(usersRef, where("uid", "==", doc.data().id));
-        onSnapshot(q, (querySnapshot) => {
-          querySnapshot.forEach((doc) => {
-            users.push(doc.data());
-          });
+      querySnapshot.forEach((snap) => {
+        const usersRef = doc(db, "users", snap.data().id);
+        getDoc(usersRef).then((res) => {
+          users.push(res.data());
           setChats(users);
         });
       });
     });
+  }
+
+  useEffect(() => {
+    getChats();
   }, []);
 
   function deleteHandler(e) {
-    const chatsRef = doc(
-      db,
-      "chats",
-      currentUser.uid,
-      "chats",
-      e.currentTarget.dataset.id
-    );
-    deleteDoc(chatsRef);
+    const targetId = e.currentTarget.dataset.id;
+    const chatsRef = doc(db, "chats", currentUser.uid, "chats", targetId);
+    deleteDoc(chatsRef).then(() => {
+      const filteredChats = chats.filter((c) => c.uid !== targetId);
+      setChats(filteredChats);
+    });
   }
 
   return !currentUser ? (
@@ -99,7 +98,7 @@ const Dashboard = ({ setRecep }) => {
               return (
                 <User
                   c={c}
-                  key={c.id}
+                  key={c.uid}
                   deleteHandler={deleteHandler}
                   selectHandler={selectHandler}
                 />

@@ -47,17 +47,6 @@ export function AuthProvider({ children }) {
     });
   }
 
-  // function checkUsers(email) {
-  //   let user;
-  //   const usersRef = collection(db, "users");
-  //   const q = query(usersRef, where("email", "==", email));
-  //   onSnapshot(q, (querySnapshot) => {
-  //     querySnapshot.forEach((doc) => {
-  //       user = doc.data();
-  //     });
-  //   });
-  // }
-
   function checkUserEmail(email) {
     return auth.fetchSignInMethodsForEmail(email);
   }
