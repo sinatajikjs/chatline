@@ -7,7 +7,7 @@ import { db, storage } from "../firebase";
 import { doc, updateDoc } from "firebase/firestore";
 
 const Profile = () => {
-  const { currentUser, updateProfileInfo, getUser,user} = useAuth();
+  const { currentUser, updateProfileInfo, getUser, user } = useAuth();
 
   const [img, setImg] = useState(currentUser.photoURL);
 

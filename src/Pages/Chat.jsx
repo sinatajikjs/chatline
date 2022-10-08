@@ -52,6 +52,7 @@ const Chat = ({ recep, user }) => {
     onSnapshot(receivedMessages, (querySnapshot) => {
       querySnapshot.forEach((doc) => {
         if (isMounted) {
+          if (doc.data().seen) return;
           updateDoc(doc.ref, {
             seen: true,
           });

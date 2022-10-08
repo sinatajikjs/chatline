@@ -24,7 +24,10 @@ const Input = ({
   async function submitHandler(e) {
     e && e.preventDefault();
     inputRef.current.focus();
-    scrollToDivRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+    scrollToDivRef.current.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
 
     if (!inputRef.current.value && !imgUrl) return;
 
