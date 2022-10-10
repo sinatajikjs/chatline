@@ -4,7 +4,6 @@ import { useRef, useState } from "react";
 import { AiOutlineSend } from "react-icons/ai";
 import { MdReply } from "react-icons/md";
 import { IoMdClose } from "react-icons/io";
-import ScrollToBottom from "react-scroll-to-bottom";
 import { ImAttachment, ImCross } from "react-icons/im";
 import { db, storage } from "../firebase";
 
@@ -24,10 +23,6 @@ const Input = ({
   async function submitHandler(e) {
     e && e.preventDefault();
     inputRef.current.focus();
-    scrollToDivRef.current.scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-    });
 
     if (!inputRef.current.value && !imgUrl) return;
 

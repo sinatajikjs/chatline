@@ -17,14 +17,15 @@ import {
 } from "firebase/firestore";
 import NewChat from "../components/NewChat";
 import User from "../components/User";
+import useLocalStorage from "../Hooks/useLocalStorage";
 
 const Dashboard = ({ setRecep }) => {
-  const [chats, setChats] = useState([]);
+  const [chats, setChats] = useLocalStorage("chats", []);
   const [modal, setModal] = useState(false);
 
   const navigate = useNavigate();
 
-  const { logout, currentUser, getUser, user } = useAuth();
+  const { logout, currentUser, user } = useAuth();
 
   async function selectHandler(e) {
     const usersRef = doc(db, "users", e.currentTarget.dataset.id);

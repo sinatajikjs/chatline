@@ -75,7 +75,7 @@ const Username = () => {
         </button>
 
         {user && user.username && (
-          <Link to="/dashboard" className="mt-2 text-blue-600 underline">
+          <Link to="/update-profile" className="mt-2 text-blue-600 underline">
             Cancel
           </Link>
         )}

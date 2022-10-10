@@ -12,7 +12,7 @@ import Dashboard from "../Pages/Dashboard";
 import Login from "../Pages/Login";
 import useLocalStorage from "../Hooks/useLocalStorage";
 import { auth, db } from "../firebase";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { doc, updateDoc } from "firebase/firestore";
 import Username from "../Pages/Username";
 import Profile from "../Pages/Profile";
 

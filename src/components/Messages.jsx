@@ -8,7 +8,7 @@ import { useState } from "react";
 import { useEffect } from "react";
 import { useRef } from "react";
 
-const Messages = ({ messages, inputRef, reply, setReply, scrollToDivRef }) => {
+const Messages = ({ messages, inputRef, reply, setReply }) => {
   const { currentUser } = useAuth();
   const [touched, setTouched] = useState(0);
   const [vibrate, setVibrate] = useState(false);
@@ -16,6 +16,7 @@ const Messages = ({ messages, inputRef, reply, setReply, scrollToDivRef }) => {
   const [bottom, setBottom] = useState(true);
 
   const msgRef = useRef();
+  const messagesRef = useRef();
 
   function touchMoveHandler(e) {
     const horzMoved = Math.round(e.touches[0].clientX) - touched.x;
@@ -90,15 +91,13 @@ const Messages = ({ messages, inputRef, reply, setReply, scrollToDivRef }) => {
       scrollToBottom();
     });
     resizeObserver.observe(messagesRef.current);
-  }, [messages]);
+  }, [messages, messagesRef.current && messagesRef.current.scrollHeight]);
 
   useEffect(() => {
     if (vibrate === true) {
       navigator.vibrate(10);
     }
   }, [vibrate]);
-
-  const messagesRef = useRef();
 
   return (
     <div
@@ -195,7 +194,6 @@ const Messages = ({ messages, inputRef, reply, setReply, scrollToDivRef }) => {
           </div>
         );
       })}
-      <div ref={scrollToDivRef}></div>
       <IoIosArrowDown
         className={`fixed bottom-0 right-0 box-content text-white text-2xl z-20 mr-4 mb-[4.5rem] bg-slate-700 p-1.5 rounded-full cursor-pointer ${
           bottom ? "opacity-0" : "opacity-100"

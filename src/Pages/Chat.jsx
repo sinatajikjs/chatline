@@ -19,19 +19,19 @@ import Infobar from "../components/Infobar";
 import Messages from "../components/Messages";
 import Input from "../components/Input";
 import { useState } from "react";
+import useLocalStorage from "../Hooks/useLocalStorage";
 
 const Chat = ({ recep, user }) => {
   const { currentUser } = useAuth();
-  const [messages, setMessages] = useState([]);
+  const id =
+    currentUser.uid > recep.uid
+      ? `${currentUser.uid + recep.uid}`
+      : `${recep.uid + currentUser.uid}`;
+  const [messages, setMessages] = useLocalStorage(id, []);
   const [reply, setReply] = useState(null);
 
   useEffect(() => {
     let isMounted = true;
-
-    const id =
-      currentUser.uid > recep.uid
-        ? `${currentUser.uid + recep.uid}`
-        : `${recep.uid + currentUser.uid}`;
 
     const messagesRef = collection(db, "messages", id, "chat");
     const messagesQ = query(messagesRef, orderBy("createdAt", "asc"));
