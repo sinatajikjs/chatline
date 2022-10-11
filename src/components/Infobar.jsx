@@ -14,9 +14,11 @@ const Infobar = ({ recep }) => {
       <div className="ml-3 flex flex-col">
         <h2 className="text-white text-2xl">{recep.name}</h2>
         <p className="text-teal-300">
-          {recep.isOnline === true
+          {recep.status === "online"
             ? "online"
-            : `Last seen at ${new Date(recep.isOnline)
+            : recep.status === "typing"
+            ? "typing..."
+            : `Last seen at ${new Date(recep.status)
                 .toTimeString()
                 .substring(0, 5)}`}
         </p>

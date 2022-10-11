@@ -41,7 +41,7 @@ const Dashboard = ({ setRecep }) => {
   function logoutHandler() {
     const currentUserRef = doc(db, "users", currentUser.uid);
     updateDoc(currentUserRef, {
-      isOnline: Date.now(),
+      status: Date.now(),
     });
 
     localStorage.removeItem("messanger-chats");

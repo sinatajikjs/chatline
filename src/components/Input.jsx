@@ -1,20 +1,13 @@
 import { doc, setDoc, Timestamp, updateDoc } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AiOutlineSend } from "react-icons/ai";
 import { MdReply } from "react-icons/md";
 import { IoMdClose } from "react-icons/io";
 import { ImAttachment, ImCross } from "react-icons/im";
 import { db, storage } from "../firebase";
 
-const Input = ({
-  recep,
-  currentUser,
-  inputRef,
-  reply,
-  setReply,
-  scrollToDivRef,
-}) => {
+const Input = ({ recep, currentUser, reply, setReply }) => {
   const [img, setImg] = useState(null);
   const [imgUrl, setImgUrl] = useState(null);
 
@@ -85,15 +78,34 @@ const Input = ({
     }
   }
 
-  const changeHandler = (e) => {
+  const fileChangeHandler = (e) => {
     setImg(e.target.files[0]);
     setImgUrl(URL.createObjectURL(e.target.files[0]));
+  };
+
+  const textChangeHandler = () => {
+    const currentUserRef = doc(db, "users", currentUser.uid);
+    updateDoc(currentUserRef, {
+      status: "typing",
+    });
+    const myTimeOut = setTimeout(() => {
+      clearTimeout(myTimeOut);
+      updateDoc(currentUserRef, {
+        status: "online",
+      });
+    }, 1000);
   };
 
   function touchEndHandler(e) {
     e.preventDefault();
     submitHandler();
   }
+
+  useEffect(() => {
+    inputRef.current.focus();
+  }, [reply]);
+
+  const inputRef = useRef();
 
   return (
     <form
@@ -134,7 +146,7 @@ const Input = ({
       )}
 
       <input
-        onChange={changeHandler}
+        onChange={fileChangeHandler}
         ref={fileRef}
         accept="image/*"
         type="file"
@@ -146,6 +158,7 @@ const Input = ({
           name="message"
           type="text"
           ref={inputRef}
+          onChange={textChangeHandler}
           required={!imgUrl}
           autoComplete="off"
           placeholder="Message"

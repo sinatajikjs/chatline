@@ -22,7 +22,7 @@ import { useState } from "react";
 import useLocalStorage from "../Hooks/useLocalStorage";
 
 const Chat = ({ recep }) => {
-  const { currentUser,username } = useAuth();
+  const { currentUser, username } = useAuth();
   const id =
     currentUser.uid > recep.uid
       ? `${currentUser.uid + recep.uid}`
@@ -66,7 +66,6 @@ const Chat = ({ recep }) => {
     };
   }, []);
 
-  const inputRef = useRef();
   const scrollToDivRef = useRef();
 
   return !currentUser || !recep || !username ? (
@@ -80,11 +79,9 @@ const Chat = ({ recep }) => {
         currentUser={currentUser}
         setReply={setReply}
         reply={reply}
-        inputRef={inputRef}
         messages={messages}
       />
       <Input
-        inputRef={inputRef}
         setMessages={setMessages}
         recep={recep}
         scrollToDivRef={scrollToDivRef}

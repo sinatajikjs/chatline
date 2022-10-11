@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import toast from "react-hot-toast";
 import { useAuth } from "../Context/AuthContext";
 import { db } from "../firebase";
@@ -61,6 +61,10 @@ const NewChat = ({ chats, setModal }) => {
       });
     });
   }
+
+  useEffect(() => {
+    usernameRef.current.focus();
+  }, []);
 
   return (
     <>

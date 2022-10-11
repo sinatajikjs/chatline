@@ -79,8 +79,9 @@ export function AuthProvider({ children }) {
 
   function signInWithGoogle() {
     const Google = new GoogleAuthProvider();
-
     signInWithPopup(auth, Google).then((result) => {
+      myToast = toast.loading("Signing In...");
+
       const { photoURL, displayName, email, uid } = result.user;
       if (result._tokenResponse.isNewUser) {
         setDoc(doc(db, "users", uid), {
@@ -154,7 +155,7 @@ export function AuthProvider({ children }) {
     const currentUserRef = doc(db, "users", currentUser.uid);
     window.addEventListener("beforeunload", function (e) {
       updateDoc(currentUserRef, {
-        isOnline: Date.now(),
+        status: Date.now(),
       });
     });
 
@@ -162,7 +163,7 @@ export function AuthProvider({ children }) {
       "visibilitychange",
       function () {
         updateDoc(currentUserRef, {
-          isOnline: document.hidden ? Date.now() : true,
+          status: document.hidden ? Date.now() : 'online',
         });
       },
       false
@@ -189,7 +190,7 @@ export function AuthProvider({ children }) {
 
       const currentUserRef = doc(db, "users", user.uid);
       updateDoc(currentUserRef, {
-        isOnline: true,
+        status: 'online',
       });
     });
     return unsubscribe;

@@ -8,7 +8,7 @@ import { useState } from "react";
 import { useEffect } from "react";
 import { useRef } from "react";
 
-const Messages = ({ messages, inputRef, reply, setReply }) => {
+const Messages = ({ messages, reply, setReply }) => {
   const { currentUser } = useAuth();
   const [touched, setTouched] = useState(0);
   const [vibrate, setVibrate] = useState(false);
@@ -53,7 +53,6 @@ const Messages = ({ messages, inputRef, reply, setReply }) => {
     const elementLeft = window.getComputedStyle(e.currentTarget).left;
 
     if (elementLeft.replace("px", "") < -45) {
-      inputRef.current.focus();
       const msg = messages.find(
         (msg) => msg.time == e.currentTarget.dataset.id
       );
