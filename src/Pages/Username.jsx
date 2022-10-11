@@ -6,7 +6,7 @@ import { useAuth } from "../Context/AuthContext";
 const Username = () => {
   const [inputValue, setInputValue] = useState("");
 
-  const { currentUser, checkUsername, updateUsername, getUser, user } =
+  const { currentUser, checkUsername, updateUsername, getUser, username } =
     useAuth();
 
   const navigate = useNavigate();
@@ -23,7 +23,7 @@ const Username = () => {
         ? toast.error("Username is Taken", { id: myToast })
         : updateUsername(currentUser.uid, inputValue).then(() => {
             toast.dismiss(myToast);
-            if (user.username) return navigate("/dashboard");
+            if (username) return navigate("/dashboard");
             navigate("/profile");
           })
     );
@@ -40,8 +40,8 @@ const Username = () => {
   };
 
   useEffect(() => {
-    setInputValue(user && user.username);
-  }, [user]);
+    setInputValue(username);
+  }, [username]);
 
   return !currentUser ? (
     <Navigate to="/" />
@@ -52,7 +52,7 @@ const Username = () => {
         className="flex flex-col items-center bg-white drop-shadow-xl py-4 px-8 rounded-md w-max border border-gray-300"
       >
         <h2 className="text-2xl font-semibold mb-3">
-          {user && user.username ? "Change Username" : "Choose a Username"}
+          {username ? "Change Username" : "Choose a Username"}
         </h2>
 
         <div className="flex flex-col my-1.5 w-full">
@@ -74,7 +74,7 @@ const Username = () => {
           Next
         </button>
 
-        {user && user.username && (
+        {username && (
           <Link to="/update-profile" className="mt-2 text-blue-600 underline">
             Cancel
           </Link>

@@ -11,6 +11,7 @@ import {
   setDoc,
   addDoc,
   Timestamp,
+  getDocs,
 } from "firebase/firestore";
 
 const NewChat = ({ chats, setModal }) => {
@@ -26,7 +27,7 @@ const NewChat = ({ chats, setModal }) => {
 
     const usersRef = collection(db, "users");
     const q = query(usersRef, where("username", "==", usernameValue));
-    onSnapshot(q, (querySnapshot) => {
+    getDocs(q).then((querySnapshot) => {
       if (querySnapshot.empty) {
         return toast.error("User Does not exist", {
           id: myToast,
@@ -47,6 +48,7 @@ const NewChat = ({ chats, setModal }) => {
           id: res.data().uid,
           createdAt: Timestamp.fromDate(new Date()),
         }).then(() => {
+          console.log("mosing");
           setModal(false);
           toast.success("SuccessFully Added", {
             id: myToast,

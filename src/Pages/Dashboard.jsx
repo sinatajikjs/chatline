@@ -25,13 +25,27 @@ const Dashboard = ({ setRecep }) => {
 
   const navigate = useNavigate();
 
-  const { logout, currentUser, user } = useAuth();
+  const { logout, currentUser, username } = useAuth();
 
-  async function selectHandler(e) {
-    const usersRef = doc(db, "users", e.currentTarget.dataset.id);
-    const user = await getDoc(usersRef);
-    setRecep(user.data());
-    navigate("/chat");
+  function selectHandler(e) {
+    const usersRef = collection(db, "users");
+    const q = query(usersRef, where("uid", "==", e.currentTarget.dataset.id));
+    onSnapshot(q, (querySnapshot) => {
+      querySnapshot.forEach((doc) => {
+        setRecep(doc.data());
+        navigate("/chat");
+      });
+    });
+  }
+
+  function logoutHandler() {
+    const currentUserRef = doc(db, "users", currentUser.uid);
+    updateDoc(currentUserRef, {
+      isOnline: Date.now(),
+    });
+
+    localStorage.removeItem("messanger-chats");
+    logout();
   }
 
   function getChats() {
@@ -65,58 +79,56 @@ const Dashboard = ({ setRecep }) => {
 
   return !currentUser ? (
     <Navigate to="/" />
-  ) : user ? (
-    !user.username ? (
-      <Navigate to="/username" />
-    ) : (
-      <div>
-        <div className="bg-teal-600 h-20 flex items-center px-5 justify-between">
-          <h1 className="text-3xl text-white font-semibold mt-0 p-0">Chats</h1>
+  ) : !username ? (
+    <Navigate to="/username" />
+  ) : (
+    <div>
+      <div className="bg-teal-600 h-20 flex items-center px-5 justify-between">
+        <h1 className="text-3xl text-white font-semibold mt-0 p-0">Chats</h1>
 
-          <div className="flex items-center">
-            <Link
-              className="mr-1 text-white px-3 py-1 rounded"
-              to={"/update-profile"}
-            >
-              <img
-                className="w-12 h-12 rounded-full object-cover"
-                src={currentUser.photoURL}
-              />
-            </Link>
-            <HiOutlineLogout
-              onClick={() => logout()}
-              className="text-red-500 text-3xl cursor-pointer"
+        <div className="flex items-center">
+          <Link
+            className="mr-1 text-white px-3 py-1 rounded"
+            to={"/update-profile"}
+          >
+            <img
+              className="w-12 h-12 rounded-full object-cover"
+              src={currentUser.photoURL}
             />
-          </div>
+          </Link>
+          <HiOutlineLogout
+            onClick={logoutHandler}
+            className="text-red-500 text-3xl cursor-pointer"
+          />
         </div>
-        {chats.length === 0 ? (
-          <p className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-lg text-gray-400 ">
-            There is not any chats yet!
-          </p>
-        ) : (
-          <div className="mt-5 mx-3 border-t">
-            {chats.map((c) => {
-              return (
-                <User
-                  c={c}
-                  key={c.uid}
-                  deleteHandler={deleteHandler}
-                  selectHandler={selectHandler}
-                />
-              );
-            })}
-          </div>
-        )}
-
-        <button onClick={() => setModal(true)}>
-          <AiFillPlusCircle className="text-4xl absolute right-0 bottom-0 bg-white text-teal-600 w-16 h-16 mb-4 mr-4 rounded-full cursor-pointer" />
-        </button>
-        {modal && (
-          <NewChat chats={chats} setChats={setChats} setModal={setModal} />
-        )}
       </div>
-    )
-  ) : null;
+      {chats.length === 0 ? (
+        <p className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-lg text-gray-400 ">
+          There is not any chats yet!
+        </p>
+      ) : (
+        <div className="mt-5 mx-3 border-t">
+          {chats.map((c) => {
+            return (
+              <User
+                c={c}
+                key={c.uid}
+                deleteHandler={deleteHandler}
+                selectHandler={selectHandler}
+              />
+            );
+          })}
+        </div>
+      )}
+
+      <button onClick={() => setModal(true)}>
+        <AiFillPlusCircle className="text-4xl absolute right-0 bottom-0 bg-white text-teal-600 w-16 h-16 mb-4 mr-4 rounded-full cursor-pointer" />
+      </button>
+      {modal && (
+        <NewChat chats={chats} setChats={setChats} setModal={setModal} />
+      )}
+    </div>
+  );
 };
 
 export default Dashboard;

@@ -12,13 +12,7 @@ const Login = () => {
 
   async function submitHandler(e) {
     e.preventDefault();
-    const myPromise = login(emailRef.current.value, passwordRef.current.value);
-
-    toast.promise(myPromise, {
-      loading: "Signing in...",
-      success: "SuccessFully Signed In",
-      error: "Email or Password is Incorrect",
-    });
+    login(emailRef.current.value, passwordRef.current.value);
   }
 
   return currentUser ? (

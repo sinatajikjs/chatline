@@ -1,7 +1,6 @@
 import { useRef, useState } from "react";
 import { useAuth } from "../Context/AuthContext";
 import { Link } from "react-router-dom";
-import toast from "react-hot-toast";
 import { Navigate } from "react-router-dom";
 
 const Signup = () => {
@@ -11,47 +10,18 @@ const Signup = () => {
   const passwordConfirmRef = useRef();
 
   const [loading, setLoading] = useState(false);
-  const { signup, checkUserEmail, currentUser } = useAuth();
+  const { signup, currentUser } = useAuth();
 
   async function submitHandler(e) {
     e.preventDefault();
 
-    const nameValue = nameRef.current.value;
-    const emailValue = emailRef.current.value;
-    const passwordValue = passwordRef.current.value;
-    const passwordConfirmValue = passwordConfirmRef.current.value;
-
-    if (!emailValue.split("@")[1].includes(".")) {
-      return toast.error("Invalid Email Address");
-    }
-    if (passwordValue !== passwordConfirmValue) {
-      return toast.error("Passwords are not match");
-    }
-    if (passwordValue.length < 6) return toast.error("Password is Weak");
-
-    const myToast = toast.loading("Signing Up...");
-
     setLoading(true);
-
-    await checkUserEmail(emailValue).then((res) => {
-      if (res.length > 0) {
-        toast.error("User is Already Exist", {
-          id: myToast,
-        });
-      } else {
-        signup(nameValue, emailRef.current.value, passwordRef.current.value)
-          .then((res) => {
-            toast.success("SuccessFully Signed Up", {
-              id: myToast,
-            });
-          })
-          .catch(() =>
-            toast.error("Failed to create an account", {
-              id: myToast,
-            })
-          );
-      }
-    });
+    signup(
+      nameRef.current.value,
+      emailRef.current.value,
+      passwordRef.current.value,
+      passwordConfirmRef.current.value
+    );
     setLoading(false);
   }
 
@@ -117,7 +87,7 @@ const Signup = () => {
           Sign Up
         </button>
       </form>
-      <Link to={"/"}>
+      <Link to={"/login"}>
         <p className="mt-5 text-blue-600 underline">
           Already have an account? Log In
         </p>

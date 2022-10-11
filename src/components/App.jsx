@@ -11,14 +11,12 @@ import Chat from "../Pages/Chat";
 import Dashboard from "../Pages/Dashboard";
 import Login from "../Pages/Login";
 import useLocalStorage from "../Hooks/useLocalStorage";
-import { auth, db } from "../firebase";
-import { doc, updateDoc } from "firebase/firestore";
 import Username from "../Pages/Username";
 import Profile from "../Pages/Profile";
+import Wellcome from "../Pages/Wellcome";
 
 const App = () => {
   const [recep, setRecep] = useLocalStorage("recep", "");
-  const [currentUser, setCurrentUser] = useState(null);
 
   const getCountry = async () => {
     const res = await axios.get("https://geolocation-db.com/json/");
@@ -29,39 +27,14 @@ const App = () => {
     getCountry().then((res) => {
       if (res === "IR") toast.error("Turn On Your VPN!");
     });
-    auth.onAuthStateChanged((user) => {
-      setCurrentUser(user);
-      const currentUserRef = doc(db, "users", user.uid);
-      updateDoc(currentUserRef, {
-        isOnline: true,
-      });
-    });
   }, []);
-
-  if (currentUser) {
-    const currentUserRef = doc(db, "users", currentUser.uid);
-    window.addEventListener("beforeunload", function (e) {
-      updateDoc(currentUserRef, {
-        isOnline: Date.now(),
-      });
-    });
-
-    document.addEventListener(
-      "visibilitychange",
-      function () {
-        updateDoc(currentUserRef, {
-          isOnline: document.hidden ? Date.now() : true,
-        });
-      },
-      false
-    );
-  }
 
   return (
     <AuthProvider>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Login />} />
+          <Route path="/" element={<Wellcome />} />
+          <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route
             path="/dashboard"
@@ -74,7 +47,6 @@ const App = () => {
           <Route path="/update-profile" element={<UpdateProfile />} />
         </Routes>
       </BrowserRouter>
-      <Toaster position="top-center" reverseOrder={false} />
     </AuthProvider>
   );
 };

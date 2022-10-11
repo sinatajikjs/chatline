@@ -21,8 +21,8 @@ import Input from "../components/Input";
 import { useState } from "react";
 import useLocalStorage from "../Hooks/useLocalStorage";
 
-const Chat = ({ recep, user }) => {
-  const { currentUser } = useAuth();
+const Chat = ({ recep }) => {
+  const { currentUser,username } = useAuth();
   const id =
     currentUser.uid > recep.uid
       ? `${currentUser.uid + recep.uid}`
@@ -69,7 +69,7 @@ const Chat = ({ recep, user }) => {
   const inputRef = useRef();
   const scrollToDivRef = useRef();
 
-  return !currentUser || !recep || (user && user.username) ? (
+  return !currentUser || !recep || !username ? (
     <Navigate to="/" />
   ) : (
     <div className="bg-gray-300 absolute top-0 w-screen h-full overflow-hidden ">
