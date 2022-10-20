@@ -8,7 +8,6 @@ import {
   collection,
   query,
   onSnapshot,
-  deleteDoc,
   doc,
   where,
   orderBy,
@@ -53,6 +52,7 @@ const Dashboard = ({ setRecep }) => {
     const q = query(chatsRef, orderBy("createdAt", "asc"));
 
     onSnapshot(q, (querySnapshot) => {
+      if (querySnapshot.empty) setChats([]);
       let users = [];
       querySnapshot.forEach((snap) => {
         const usersRef = doc(db, "users", snap.data().id);
@@ -68,14 +68,7 @@ const Dashboard = ({ setRecep }) => {
     getChats();
   }, []);
 
-  function deleteHandler(e) {
-    const targetId = e.currentTarget.dataset.id;
-    const chatsRef = doc(db, "chats", currentUser.uid, "chats", targetId);
-    deleteDoc(chatsRef).then(() => {
-      const filteredChats = chats.filter((c) => c.uid !== targetId);
-      setChats(filteredChats);
-    });
-  }
+
 
   return !currentUser ? (
     <Navigate to="/" />
@@ -113,7 +106,6 @@ const Dashboard = ({ setRecep }) => {
               <User
                 c={c}
                 key={c.uid}
-                deleteHandler={deleteHandler}
                 selectHandler={selectHandler}
               />
             );

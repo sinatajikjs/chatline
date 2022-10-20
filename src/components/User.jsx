@@ -4,7 +4,7 @@ import { IoTrashOutline } from "react-icons/io5";
 import { useAuth } from "../Context/AuthContext";
 import { db } from "../firebase";
 
-const User = ({ c, deleteHandler, selectHandler }) => {
+const User = ({ c, selectHandler }) => {
   const [lastMsg, setLastMsg] = useState(null);
   const { currentUser } = useAuth();
 
@@ -28,7 +28,7 @@ const User = ({ c, deleteHandler, selectHandler }) => {
       w-full py-3 border-b cursor-pointer"
       >
         <img
-          className="w-14 h-14 rounded-full border-2 border-gray-400 cursor-pointer object-cover"
+          className="w-14 h-14 rounded-full cursor-pointer object-cover"
           src={c.photoURL}
         />
         <span className="ml-2">
@@ -41,13 +41,6 @@ const User = ({ c, deleteHandler, selectHandler }) => {
             }`}</p>
           )}
         </span>
-      </div>
-      <div
-        onClick={deleteHandler}
-        data-id={c.uid}
-        className="absolute right-0 p-3 pr-0 cursor-pointer"
-      >
-        <IoTrashOutline className="text-3xl text-red-500 mr-1" />
       </div>
     </section>
   );
