@@ -1,8 +1,21 @@
 import { BsArrowLeftShort } from "react-icons/bs";
 import { Link } from "react-router-dom";
+import { useAuth } from "../Context/AuthContext";
 import KebabMenu from "./KebabMenu";
 
 const Infobar = ({ recep }) => {
+  const { currentUser } = useAuth();
+
+  const getUserStatus = () => {
+    if (recep.status === "online") return "online";
+    if (recep.status === "typing") {
+      return recep.currentRecep === currentUser.uid ? "typing..." : "online";
+    }
+    return `Last seen at ${new Date(recep.status)
+      .toTimeString()
+      .substring(0, 5)}`;
+  };
+
   return (
     <section className="flex items-center justify-between bg-teal-600 py-2 fixed w-screen top-0 z-10 px-2">
       <div className="flex items-center">
@@ -15,18 +28,10 @@ const Infobar = ({ recep }) => {
         />
         <div className="ml-3 flex flex-col">
           <h2 className="text-white text-2xl">{recep.name}</h2>
-          <p className="text-teal-300">
-            {recep.status === "online"
-              ? "online"
-              : recep.status === "typing"
-              ? "typing..."
-              : `Last seen at ${new Date(recep.status)
-                  .toTimeString()
-                  .substring(0, 5)}`}
-          </p>
+          <p className="text-teal-300">{getUserStatus()}</p>
         </div>
       </div>
-      <KebabMenu recep={recep}/>
+      <KebabMenu recep={recep} />
     </section>
   );
 };

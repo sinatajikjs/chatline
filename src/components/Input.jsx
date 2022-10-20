@@ -87,9 +87,9 @@ const Input = ({ recep, currentUser, reply, setReply }) => {
     const currentUserRef = doc(db, "users", currentUser.uid);
     updateDoc(currentUserRef, {
       status: "typing",
+      currentRecep: recep.uid,
     });
-    const myTimeOut = setTimeout(() => {
-      clearTimeout(myTimeOut);
+    setTimeout(() => {
       updateDoc(currentUserRef, {
         status: "online",
       });
