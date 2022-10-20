@@ -18,15 +18,12 @@ import Wellcome from "../Pages/Wellcome";
 const App = () => {
   const [recep, setRecep] = useLocalStorage("recep", "");
 
-  const getCountry = async () => {
-    const res = await axios.get("https://geolocation-db.com/json/");
-    return res.data.country_code;
-  };
-
   useEffect(() => {
-    getCountry().then((res) => {
-      if (res === "IR") toast.error("Turn On Your VPN!");
-    });
+    axios
+      .get("http://ip-api.com/json")
+      .then(
+        (res) => res.data.country === "Iran" && toast.error("Turn On Your VPN!")
+      );
   }, []);
 
   return (

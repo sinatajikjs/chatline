@@ -17,6 +17,7 @@ import {
   updateProfile,
   GoogleAuthProvider,
   signInWithPopup,
+  signInWithRedirect,
 } from "firebase/auth";
 
 const AuthContext = React.createContext();
@@ -79,10 +80,9 @@ export function AuthProvider({ children }) {
 
   function signInWithGoogle() {
     const Google = new GoogleAuthProvider();
-    signInWithPopup(auth, Google).then((result) => {
-      myToast = toast.loading("Signing In...");
-
+    signInWithRedirect(auth, Google).then((result) => {
       const { photoURL, displayName, email, uid } = result.user;
+      
       if (result._tokenResponse.isNewUser) {
         setDoc(doc(db, "users", uid), {
           uid,
@@ -163,7 +163,7 @@ export function AuthProvider({ children }) {
       "visibilitychange",
       function () {
         updateDoc(currentUserRef, {
-          status: document.hidden ? Date.now() : 'online',
+          status: document.hidden ? Date.now() : "online",
         });
       },
       false
@@ -190,7 +190,7 @@ export function AuthProvider({ children }) {
 
       const currentUserRef = doc(db, "users", user.uid);
       updateDoc(currentUserRef, {
-        status: 'online',
+        status: "online",
       });
     });
     return unsubscribe;
