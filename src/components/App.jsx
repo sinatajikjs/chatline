@@ -20,10 +20,8 @@ const App = () => {
 
   useEffect(() => {
     axios
-      .get("http://ip-api.com/json")
-      .then(
-        (res) => res.data.country === "Iran" && toast.error("Turn On Your VPN!")
-      );
+      .get("https://api.myip.com")
+      .then((res) => res.data.cc === "IR" && toast.error("Turn On Your VPN!"));
   }, []);
 
   return (
