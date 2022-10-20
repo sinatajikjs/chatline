@@ -19,9 +19,9 @@ const App = () => {
   const [recep, setRecep] = useLocalStorage("recep", "");
 
   useEffect(() => {
-    axios
-      .get("https://api.myip.com")
-      .then((res) => res.data.cc === "IR" && toast.error("Turn On Your VPN!"));
+    axios.get("https://api.ip.sb/geoip").then((res) => {
+      res.data.country === "Iran" && toast.error("Turn On Your VPN!");
+    });
   }, []);
 
   return (
