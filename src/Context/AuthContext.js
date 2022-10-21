@@ -18,6 +18,7 @@ import {
   GoogleAuthProvider,
   signInWithPopup,
   signInWithRedirect,
+  GithubAuthProvider,
 } from "firebase/auth";
 
 const AuthContext = React.createContext();
@@ -82,7 +83,24 @@ export function AuthProvider({ children }) {
     const Google = new GoogleAuthProvider();
     signInWithRedirect(auth, Google).then((result) => {
       const { photoURL, displayName, email, uid } = result.user;
-      
+
+      if (result._tokenResponse.isNewUser) {
+        setDoc(doc(db, "users", uid), {
+          uid,
+          photoURL,
+          name: displayName,
+          email,
+          createdAt: Timestamp.fromDate(new Date()),
+        });
+      }
+    });
+  }
+
+  function signInWithGithub() {
+    const Github = new GithubAuthProvider();
+    signInWithPopup(auth, Github).then((result) => {
+      const { photoURL, displayName, email, uid } = result.user;
+
       if (result._tokenResponse.isNewUser) {
         setDoc(doc(db, "users", uid), {
           uid,
@@ -206,6 +224,7 @@ export function AuthProvider({ children }) {
     updatePassword,
     checkUserEmail,
     signInWithGoogle,
+    signInWithGithub,
     updateProfileInfo,
     checkUsername,
     updateUsername,

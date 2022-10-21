@@ -2,7 +2,7 @@ import { Link, Navigate } from "react-router-dom";
 import { useAuth } from "../Context/AuthContext";
 
 const Wellcome = () => {
-  const { signInWithGoogle, currentUser } = useAuth();
+  const { signInWithGoogle, signInWithGithub, currentUser } = useAuth();
   return currentUser ? (
     <Navigate to="/dashboard" />
   ) : (
@@ -12,7 +12,13 @@ const Wellcome = () => {
         className="border border-gray-400 rounded p-2 text-2xl mb-4"
         onClick={signInWithGoogle}
       >
-        Sign in with Google
+        Sign In With Google
+      </button>
+      <button
+        className="border border-gray-400 rounded p-2 text-2xl mb-4"
+        onClick={signInWithGithub}
+      >
+        Sign In With Github
       </button>
       <Link to={"/login"}>
         <button className="border border-gray-400 rounded p-2 text-2xl">

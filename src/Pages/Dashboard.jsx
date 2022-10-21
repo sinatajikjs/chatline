@@ -51,9 +51,9 @@ const Dashboard = ({ setRecep }) => {
     const chatsRef = collection(db, "chats", currentUser.uid, "chats");
     const q = query(chatsRef, orderBy("createdAt", "asc"));
 
+    let users = [];
     onSnapshot(q, (querySnapshot) => {
       if (querySnapshot.empty) setChats([]);
-      let users = [];
       querySnapshot.forEach((snap) => {
         const usersRef = doc(db, "users", snap.data().id);
         getDoc(usersRef).then((res) => {
@@ -67,8 +67,6 @@ const Dashboard = ({ setRecep }) => {
   useEffect(() => {
     getChats();
   }, []);
-
-
 
   return !currentUser ? (
     <Navigate to="/" />
@@ -102,13 +100,7 @@ const Dashboard = ({ setRecep }) => {
       ) : (
         <div className="mt-5 mx-3 border-t">
           {chats.map((c) => {
-            return (
-              <User
-                c={c}
-                key={c.uid}
-                selectHandler={selectHandler}
-              />
-            );
+            return <User c={c} key={c.uid} selectHandler={selectHandler} />;
           })}
         </div>
       )}
