@@ -36,7 +36,7 @@ const Signup = () => {
         <h2 className="text-3xl font-semibold mb-5">Sign Up</h2>
 
         <div className="flex flex-col my-1.5 w-full">
-          <label htmlFor="name">Name</label>
+          <label htmlFor="name">Full Name</label>
           <input
             className="border border-stone-400 rounded text-medium px-2 py-1 w-full mt-1"
             type="name"

@@ -48,7 +48,6 @@ const NewChat = ({ chats, setModal }) => {
           id: res.data().uid,
           createdAt: Timestamp.fromDate(new Date()),
         }).then(() => {
-          console.log("mosing");
           setModal(false);
           toast.success("SuccessFully Added", {
             id: myToast,

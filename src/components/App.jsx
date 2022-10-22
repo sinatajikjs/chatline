@@ -16,7 +16,7 @@ import Profile from "../Pages/Profile";
 import Wellcome from "../Pages/Wellcome";
 
 const App = () => {
-  const [recep, setRecep] = useLocalStorage("recep", "");
+  const [recepId, setRecepId] = useState("");
 
   useEffect(() => {
     axios.get("https://api.ip.sb/geoip").then((res) => {
@@ -33,9 +33,9 @@ const App = () => {
           <Route path="/signup" element={<Signup />} />
           <Route
             path="/dashboard"
-            element={<Dashboard setRecep={setRecep} />}
+            element={<Dashboard setRecepId={setRecepId} />}
           />
-          <Route path="/chat" element={<Chat recep={recep} />} />
+          <Route path="/chat" element={<Chat recepId={recepId} />} />
           <Route path="/restore" element={<Restore />} />
           <Route path="/username" element={<Username />} />
           <Route path="/profile" element={<Profile />} />

@@ -18,7 +18,7 @@ import NewChat from "../components/NewChat";
 import User from "../components/User";
 import useLocalStorage from "../Hooks/useLocalStorage";
 
-const Dashboard = ({ setRecep }) => {
+const Dashboard = ({ setRecepId }) => {
   const [chats, setChats] = useLocalStorage("chats", []);
   const [modal, setModal] = useState(false);
 
@@ -27,14 +27,20 @@ const Dashboard = ({ setRecep }) => {
   const { logout, currentUser, username } = useAuth();
 
   function selectHandler(e) {
-    const usersRef = collection(db, "users");
-    const q = query(usersRef, where("uid", "==", e.currentTarget.dataset.id));
-    onSnapshot(q, (querySnapshot) => {
-      querySnapshot.forEach((doc) => {
-        setRecep(doc.data());
-        navigate("/chat");
-      });
-    });
+    // const usersRef = doc(db, "users", e.currentTarget.dataset.id);
+    // getDoc(usersRef).then((res) => {
+    //   setRecep(res.data());
+    // });
+    setRecepId(e.currentTarget.dataset.id)
+    navigate("/chat");
+
+    // const q = query(usersRef, where("uid", "==", e.currentTarget.dataset.id));
+    // onSnapshot(q, (querySnapshot) => {
+    //   querySnapshot.forEach((doc) => {
+    //     setRecep(doc.data());
+    //     navigate("/chat");
+    //   });
+    // });
   }
 
   function logoutHandler() {
@@ -51,9 +57,9 @@ const Dashboard = ({ setRecep }) => {
     const chatsRef = collection(db, "chats", currentUser.uid, "chats");
     const q = query(chatsRef, orderBy("createdAt", "asc"));
 
-    let users = [];
     onSnapshot(q, (querySnapshot) => {
       if (querySnapshot.empty) setChats([]);
+      let users = [];
       querySnapshot.forEach((snap) => {
         const usersRef = doc(db, "users", snap.data().id);
         getDoc(usersRef).then((res) => {
