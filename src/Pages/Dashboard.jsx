@@ -27,20 +27,8 @@ const Dashboard = ({ setRecepId }) => {
   const { logout, currentUser, username } = useAuth();
 
   function selectHandler(e) {
-    // const usersRef = doc(db, "users", e.currentTarget.dataset.id);
-    // getDoc(usersRef).then((res) => {
-    //   setRecep(res.data());
-    // });
-    setRecepId(e.currentTarget.dataset.id)
+    setRecepId(e.currentTarget.dataset.id);
     navigate("/chat");
-
-    // const q = query(usersRef, where("uid", "==", e.currentTarget.dataset.id));
-    // onSnapshot(q, (querySnapshot) => {
-    //   querySnapshot.forEach((doc) => {
-    //     setRecep(doc.data());
-    //     navigate("/chat");
-    //   });
-    // });
   }
 
   function logoutHandler() {

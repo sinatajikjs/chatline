@@ -80,8 +80,11 @@ export function AuthProvider({ children }) {
   }
 
   function signInWithGoogle() {
+    console.log("sing...");
     const Google = new GoogleAuthProvider();
-    signInWithRedirect(auth, Google).then((result) => {
+    signInWithPopup(auth, Google).then((result) => {
+      console.log(result);
+      console.log(result._tokenResponse.isNewUser);
       const { photoURL, displayName, email, uid } = result.user;
 
       if (result._tokenResponse.isNewUser) {
