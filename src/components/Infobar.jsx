@@ -7,6 +7,7 @@ const Infobar = ({ recep }) => {
   const { currentUser } = useAuth();
 
   const getUserStatus = () => {
+    if (!recep) return;
     if (recep.status === "online") return "online";
     if (recep.status === "typing") {
       return recep.currentRecep === currentUser.uid ? "typing..." : "online";

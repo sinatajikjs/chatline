@@ -13,6 +13,7 @@ import {
   orderBy,
   updateDoc,
   getDoc,
+  getDocs,
 } from "firebase/firestore";
 import NewChat from "../components/NewChat";
 import User from "../components/User";
@@ -41,18 +42,22 @@ const Dashboard = ({ setRecepId }) => {
     logout();
   }
 
-  function getChats() {
+  async function getChats() {
     const chatsRef = collection(db, "chats", currentUser.uid, "chats");
     const q = query(chatsRef, orderBy("createdAt", "asc"));
 
     onSnapshot(q, (querySnapshot) => {
       if (querySnapshot.empty) setChats([]);
-      let users = [];
-      querySnapshot.forEach((snap) => {
-        const usersRef = doc(db, "users", snap.data().id);
-        getDoc(usersRef).then((res) => {
-          users.push(res.data());
-          setChats(users);
+
+      const chatsArr = [];
+
+      querySnapshot.forEach((chat) => {
+        const usersRef = collection(db, "users");
+        getDocs(usersRef).then((snap) => {
+          snap.forEach((user) => {
+            if (user.data().uid === chat.data().id) chatsArr.push(user.data());
+          });
+          setChats(chatsArr);
         });
       });
     });

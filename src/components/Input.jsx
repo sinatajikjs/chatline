@@ -51,7 +51,7 @@ const Input = ({ recep, currentUser, reply, setReply }) => {
     });
 
     await setDoc(doc(db, "lastMsg", id), {
-      text: inputValue,
+      text: inputValue || "Photo",
       from: currentUser.uid,
       to: recep.uid,
       createdAt: Timestamp.fromDate(new Date()),
