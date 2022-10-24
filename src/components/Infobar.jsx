@@ -12,9 +12,35 @@ const Infobar = ({ recep }) => {
     if (recep.status === "typing") {
       return recep.currentRecep === currentUser.uid ? "typing..." : "online";
     }
-    return `Last seen at ${new Date(recep.status)
-      .toTimeString()
-      .substring(0, 5)}`;
+
+    const weekday = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+    const statDate = new Date(recep.status);
+
+    const DayCondition = new Date().getDate() - statDate.getDate();
+    const YearCondition = new Date().getFullYear() - statDate.getFullYear();
+
+    if (YearCondition > 0)
+      return `Last seen ${statDate.toString().substring(4, 15)}`;
+
+    switch (DayCondition) {
+      case 0:
+        return `Last seen at ${statDate.toTimeString().substring(0, 5)}`;
+      case 1:
+        return `Last seen Yesterday ${statDate.toTimeString().substring(0, 5)}`;
+      case 2:
+      case 3:
+      case 4:
+      case 5:
+      case 6:
+        return `Last seen ${weekday[statDate.getDay()]} ${statDate
+          .toTimeString()
+          .substring(0, 5)}`;
+      default:
+        return `Last seen ${statDate.toString().substring(4, 10)}, ${statDate
+          .toTimeString()
+          .substring(0, 5)}`;
+    }
   };
 
   return (
