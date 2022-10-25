@@ -52,10 +52,6 @@ const NewChat = ({ chats, setModal }) => {
           toast.success("SuccessFully Added", {
             id: myToast,
           });
-          setDoc(doc(db, "chats", res.data().uid, "chats", currentUser.uid), {
-            id: currentUser.uid,
-            createdAt: Timestamp.fromDate(new Date()),
-          });
         });
       });
     });

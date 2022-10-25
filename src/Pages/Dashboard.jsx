@@ -44,7 +44,7 @@ const Dashboard = ({ setRecepId }) => {
 
   async function getChats() {
     const chatsRef = collection(db, "chats", currentUser.uid, "chats");
-    const q = query(chatsRef, orderBy("createdAt", "asc"));
+    const q = query(chatsRef, orderBy("createdAt", "desc"));
 
     onSnapshot(q, (querySnapshot) => {
       if (querySnapshot.empty) setChats([]);

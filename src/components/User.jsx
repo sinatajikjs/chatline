@@ -1,11 +1,11 @@
-import { doc, onSnapshot } from "firebase/firestore";
+import { collection, doc, onSnapshot, query, where } from "firebase/firestore";
 import { useEffect, useState } from "react";
-import { IoTrashOutline } from "react-icons/io5";
 import { useAuth } from "../Context/AuthContext";
 import { db } from "../firebase";
 
 const User = ({ c, selectHandler }) => {
   const [lastMsg, setLastMsg] = useState(null);
+  const [unreadMsgs, setUnreadMsgs] = useState("");
   const { currentUser } = useAuth();
 
   const id =
@@ -17,21 +17,39 @@ const User = ({ c, selectHandler }) => {
     onSnapshot(doc(db, "lastMsg", id), (doc) => {
       setLastMsg(doc.data());
     });
+
+    const messagesRef = collection(db, "messages", id, "chat");
+    const receivedUnreadMsgs = query(
+      messagesRef,
+      where("to", "==", currentUser.uid),
+      where("seen", "==", false)
+    );
+    onSnapshot(receivedUnreadMsgs, (snap) => {
+      if (snap.empty) return;
+      setUnreadMsgs(snap.size);
+    });
   }, []);
 
   return (
-    <section key={c.uid} className="flex items-center justify-between relative">
-      <div
-        onClick={selectHandler}
-        data-id={c.uid}
-        className="flex items-center 
-      w-full py-3 border-b cursor-pointer"
-      >
-        <img
-          className="w-14 h-14 rounded-full cursor-pointer object-cover"
-          src={c.photoURL}
-        />
-        <span className="ml-2">
+    <div
+      onClick={selectHandler}
+      data-id={c.uid}
+      className="flex items-center 
+      w-full py-3 border-b cursor-pointer justify-between"
+    >
+      <div className="flex items-center">
+        <div className="relative">
+          <img
+            className="w-14 h-14 rounded-full cursor-pointer object-cover"
+            src={c.photoURL}
+          />
+          {unreadMsgs && (
+            <div className="w-3.5 h-3.5 bg-white rounded-full absolute bottom-0.5 right-0.5 flex items-center justify-center">
+              <div className="w-2.5 h-2.5 bg-violet-600 rounded-full"></div>
+            </div>
+          )}
+        </div>
+        <div className="ml-2">
           <h2 className="text-xl">{c.name}</h2>
           {lastMsg && (
             <p className="text-gray-500">{`${
@@ -40,9 +58,14 @@ const User = ({ c, selectHandler }) => {
               lastMsg.text.length > 19 ? "..." : ""
             }`}</p>
           )}
-        </span>
+        </div>
       </div>
-    </section>
+      {unreadMsgs && (
+        <div className="bg-violet-600 w-6 h-6 rounded-full flex items-center justify-center mr-1">
+          <p className="text-white">{unreadMsgs}</p>
+        </div>
+      )}
+    </div>
   );
 };
 

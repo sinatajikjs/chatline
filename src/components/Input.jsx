@@ -56,7 +56,6 @@ const Input = ({ recep, currentUser, reply, setReply }) => {
       to: recep.uid,
       createdAt: Timestamp.fromDate(new Date()),
       media: imgUrl || "",
-      unread: true,
     });
 
     if (img) {
@@ -69,13 +68,22 @@ const Input = ({ recep, currentUser, reply, setReply }) => {
       const snap = await uploadBytes(imgRef, img);
       const dlUrl = await getDownloadURL(ref(storage, snap.ref.fullPath));
       url = dlUrl;
-      updateDoc(docRef, {
+      await updateDoc(docRef, {
         media: {
           url,
           type: "public",
         },
       });
     }
+    setDoc(doc(db, "chats", currentUser.uid, "chats", recep.uid), {
+      id: recep.uid,
+      createdAt: Timestamp.fromDate(new Date()),
+    }).then(() => {
+      setDoc(doc(db, "chats", recep.uid, "chats", currentUser.uid), {
+        id: currentUser.uid,
+        createdAt: Timestamp.fromDate(new Date()),
+      });
+    });
   }
 
   const fileChangeHandler = (e) => {
