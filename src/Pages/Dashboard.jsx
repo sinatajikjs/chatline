@@ -19,13 +19,13 @@ import NewChat from "../components/NewChat";
 import User from "../components/User";
 import useLocalStorage from "../Hooks/useLocalStorage";
 
-const Dashboard = ({ setRecepId }) => {
+const Dashboard = () => {
   const [chats, setChats] = useLocalStorage("chats", []);
   const [modal, setModal] = useState(false);
 
   const navigate = useNavigate();
 
-  const { logout, currentUser, username } = useAuth();
+  const { logout, currentUser, username, setRecepId } = useAuth();
 
   function selectHandler(e) {
     setRecepId(e.currentTarget.dataset.id);

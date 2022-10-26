@@ -30,6 +30,7 @@ let myToast;
 export function AuthProvider({ children }) {
   const [currentUser, setCurrentUser] = useState();
   const [username, setUsername] = useState(null);
+  const [recepId, setRecepId] = useState("");
 
   const [loading, setLoading] = useState(true);
 
@@ -176,6 +177,7 @@ export function AuthProvider({ children }) {
       updateDoc(currentUserRef, {
         status: Date.now(),
       });
+      setRecepId("");
     });
 
     document.addEventListener(
@@ -184,6 +186,7 @@ export function AuthProvider({ children }) {
         updateDoc(currentUserRef, {
           status: document.hidden ? Date.now() : "online",
         });
+        document.hidden && setRecepId("");
       },
       false
     );
@@ -231,6 +234,8 @@ export function AuthProvider({ children }) {
     updateUsername,
     getUser,
     username,
+    recepId,
+    setRecepId,
   };
 
   return (

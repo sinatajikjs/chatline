@@ -21,8 +21,8 @@ import Input from "../components/Input";
 import { useState } from "react";
 import useLocalStorage from "../Hooks/useLocalStorage";
 
-const Chat = ({ recepId }) => {
-  const { currentUser, username } = useAuth();
+const Chat = () => {
+  const { currentUser, username,recepId } = useAuth();
 
   const [recep, setRecep] = useLocalStorage("recep", "");
 
@@ -34,8 +34,6 @@ const Chat = ({ recepId }) => {
   const [reply, setReply] = useState(null);
 
   useEffect(() => {
-    let isMounted = true;
-
     const usersRef = doc(db, "users", recepId);
 
     onSnapshot(usersRef, (doc) => setRecep(doc.data()));
@@ -57,18 +55,16 @@ const Chat = ({ recepId }) => {
       where("to", "==", currentUser.uid)
     );
 
-    onSnapshot(receivedMessages, (querySnapshot) => {
+    const unsubscribe = onSnapshot(receivedMessages, (querySnapshot) => {
       querySnapshot.forEach((doc) => {
-        if (isMounted) {
-          updateDoc(doc.ref, {
-            seen: "seen",
-          });
-        }
+        updateDoc(doc.ref, {
+          seen: "seen",
+        });
       });
     });
 
     return () => {
-      isMounted = false;
+      unsubscribe();
       localStorage.removeItem("messanger-recep");
     };
   }, []);

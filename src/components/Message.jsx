@@ -63,26 +63,12 @@ const Message = (props) => {
               </div>
             </div>
           )}
-          {message.media.url &&
-            (message.from === currentUser.uid ? (
-              <img
-                src={message.media.url}
-                className="w-52 px-1 py-1 rounded-lg"
-              />
-            ) : !message.media.public ? (
-              <SkeletonTheme baseColor="#cecece" highlightColor="#c2bfbf">
-                <Skeleton
-                  containerClassName="pb-1 px-1"
-                  height={208}
-                  width={208}
-                />
-              </SkeletonTheme>
-            ) : (
-              <img
-                src={message.media.url}
-                className="w-52 px-1 py-1 rounded-lg"
-              />
-            ))}
+          {message.media.url && (
+            <img
+              src={message.media.url}
+              className="w-52 px-1 py-1 rounded-lg"
+            />
+          )}
 
           <div className="flex pb-1.5 justify-between">
             <h2

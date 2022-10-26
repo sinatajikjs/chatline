@@ -16,8 +16,6 @@ import Profile from "../Pages/Profile";
 import Wellcome from "../Pages/Wellcome";
 
 const App = () => {
-  const [recepId, setRecepId] = useState("");
-
   useEffect(() => {
     axios.get("https://api.ip.sb/geoip").then((res) => {
       res.data.country === "Iran" && toast.error("Turn On Your VPN!");
@@ -31,11 +29,8 @@ const App = () => {
           <Route path="/" element={<Wellcome />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
-          <Route
-            path="/dashboard"
-            element={<Dashboard setRecepId={setRecepId} />}
-          />
-          <Route path="/chat" element={<Chat recepId={recepId} />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/chat" element={<Chat />} />
           <Route path="/restore" element={<Restore />} />
           <Route path="/username" element={<Username />} />
           <Route path="/profile" element={<Profile />} />
