@@ -53,7 +53,7 @@ const Chat = ({ recepId }) => {
 
     const receivedMessages = query(
       messagesRef,
-      where("seen", "==", false),
+      where("seen", "==", "sent"),
       where("to", "==", currentUser.uid)
     );
 
@@ -61,7 +61,7 @@ const Chat = ({ recepId }) => {
       querySnapshot.forEach((doc) => {
         if (isMounted) {
           updateDoc(doc.ref, {
-            seen: true,
+            seen: "seen",
           });
         }
       });
@@ -90,10 +90,9 @@ const Chat = ({ recepId }) => {
       />
       <Input
         setMessages={setMessages}
-        recep={recep}
-        scrollToDivRef={scrollToDivRef}
-        currentUser={currentUser}
         messages={messages}
+        recep={recep}
+        currentUser={currentUser}
         setReply={setReply}
         reply={reply}
       />

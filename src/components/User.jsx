@@ -22,7 +22,7 @@ const User = ({ c, selectHandler }) => {
     const receivedUnreadMsgs = query(
       messagesRef,
       where("to", "==", currentUser.uid),
-      where("seen", "==", false)
+      where("seen", "==", "sent")
     );
     onSnapshot(receivedUnreadMsgs, (snap) => {
       if (snap.empty) return;

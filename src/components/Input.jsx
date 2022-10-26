@@ -44,18 +44,17 @@ const Input = ({ recep, currentUser, reply, setReply }) => {
       createdAt: Timestamp.fromDate(new Date()),
       media: {
         url: imgUrl || "",
-        type: "local",
+        public: false,
       },
       replyTo: reply,
-      seen: false,
-    });
+      seen: "sending",
+    }).then(() => !imgUrl && updateDoc(docRef, { seen: "sent" }));
 
     await setDoc(doc(db, "lastMsg", id), {
       text: inputValue || "Photo",
       from: currentUser.uid,
       to: recep.uid,
       createdAt: Timestamp.fromDate(new Date()),
-      media: imgUrl || "",
     });
 
     if (img) {
@@ -71,8 +70,9 @@ const Input = ({ recep, currentUser, reply, setReply }) => {
       await updateDoc(docRef, {
         media: {
           url,
-          type: "public",
+          public: true,
         },
+        seen: "sent",
       });
     }
     setDoc(doc(db, "chats", currentUser.uid, "chats", recep.uid), {
