@@ -26,11 +26,14 @@ const KebabMenu = ({ recep }) => {
     >
       <GoKebabVertical className="text-2xl text-white mr-1 cursor-pointer" />
       <ul
-        className={`absolute w-max -left-24 -top-2 bg-white py-2 px-4 rounded ${
+        className={`absolute w-max -left-24 -top-2 bg-white rounded ${
           menu ? "scale-100" : "scale-0"
         } transition-all`}
       >
-        <li onClick={deleteHandler} className="text-lg cursor-pointer">
+        <li
+          onClick={deleteHandler}
+          className="text-lg cursor-pointer py-2 px-4"
+        >
           Delete Chat
         </li>
       </ul>

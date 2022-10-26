@@ -68,10 +68,10 @@ const Messages = ({ messages, reply, setReply }) => {
     }, 1500);
   }
 
-  function scrollToBottom() {
-    messagesRef.current.scrollTo({
+  function scrollToBottom(behavior) {
+    messagesRef.current?.scrollTo({
       top: messagesRef.current.scrollHeight,
-      behavior: "smooth",
+      behavior,
     });
   }
   function handleScroll(e) {
@@ -82,12 +82,15 @@ const Messages = ({ messages, reply, setReply }) => {
     } else setBottom(false);
   }
 
+  const [firstLoad, setFirstLoad] = useState(0);
   useEffect(() => {
+    setFirstLoad(firstLoad + 1);
+
     const resizeObserver = new ResizeObserver(() => {
-      scrollToBottom();
+      scrollToBottom(firstLoad > 2 ? "smooth" : "auto");
     });
     resizeObserver.observe(messagesRef.current);
-  }, [messages, messagesRef.current && messagesRef.current.scrollHeight]);
+  }, [messages, messagesRef.current?.scrollHeight]);
 
   useEffect(() => {
     if (vibrate === true) {
@@ -119,7 +122,7 @@ const Messages = ({ messages, reply, setReply }) => {
         className={`fixed bottom-0 right-0 box-content text-white text-2xl z-20 mr-4 mb-[4.5rem] bg-slate-700 p-1.5 rounded-full cursor-pointer ${
           bottom ? "opacity-0" : "opacity-100"
         } transition-all`}
-        onClick={scrollToBottom}
+        onClick={() => scrollToBottom("smooth")}
       />
     </div>
   );

@@ -110,6 +110,7 @@ const Input = ({ recep, currentUser, reply, setReply }) => {
   }
 
   useEffect(() => {
+    if (!reply) return;
     inputRef.current.focus();
   }, [reply]);
 
