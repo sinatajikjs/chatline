@@ -16,15 +16,9 @@ import Profile from "../Pages/Profile";
 import Wellcome from "../Pages/Wellcome";
 
 const App = () => {
-  useEffect(() => {
-    axios.get("https://api.ip.sb/geoip").then((res) => {
-      res.data.country === "Iran" && toast.error("Turn On Your VPN!");
-    });
-  }, []);
-
   return (
-    <AuthProvider>
-      <BrowserRouter>
+    <BrowserRouter>
+      <AuthProvider>
         <Routes>
           <Route path="/" element={<Wellcome />} />
           <Route path="/login" element={<Login />} />
@@ -36,8 +30,8 @@ const App = () => {
           <Route path="/profile" element={<Profile />} />
           <Route path="/update-profile" element={<UpdateProfile />} />
         </Routes>
-      </BrowserRouter>
-    </AuthProvider>
+      </AuthProvider>
+    </BrowserRouter>
   );
 };
 

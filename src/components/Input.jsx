@@ -119,7 +119,7 @@ const Input = ({ recep, currentUser, reply, setReply }) => {
   return (
     <form
       onSubmit={submitHandler}
-      className="fixed bottom-0 pb-3 flex items-center justify-center w-screen px-4 mt-5 bg-gray-300"
+      className="fixed bottom-0 pb-3 z-20 flex items-center justify-center w-screen px-4 mt-5 bg-gray-300"
     >
       {imgUrl ? (
         <>
@@ -190,10 +190,7 @@ const Input = ({ recep, currentUser, reply, setReply }) => {
             </div>
           </div>
           <IoMdClose
-            onClick={() => {
-              inputRef.current.focus();
-              setReply(null);
-            }}
+            onClick={() => setReply(null)}
             onTouchEnd={(e) => {
               e.preventDefault();
               setReply(null);

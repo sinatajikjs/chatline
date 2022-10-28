@@ -20,6 +20,8 @@ import {
   signInWithRedirect,
   GithubAuthProvider,
 } from "firebase/auth";
+import { useNavigate } from "react-router-dom";
+import useLocalStorage from "../Hooks/useLocalStorage";
 
 const AuthContext = React.createContext();
 
@@ -30,9 +32,11 @@ let myToast;
 export function AuthProvider({ children }) {
   const [currentUser, setCurrentUser] = useState();
   const [username, setUsername] = useState(null);
-  const [recepId, setRecepId] = useState("");
+  const [recepId, setRecepId] = useLocalStorage("recepId", "");
 
   const [loading, setLoading] = useState(true);
+
+  const navigate = useNavigate();
 
   async function signup(name, email, password, passwordConfirmValue) {
     if (!email.split("@")[1].includes(".")) {
@@ -177,7 +181,6 @@ export function AuthProvider({ children }) {
       updateDoc(currentUserRef, {
         status: Date.now(),
       });
-      setRecepId("");
     });
 
     document.addEventListener(
@@ -186,7 +189,6 @@ export function AuthProvider({ children }) {
         updateDoc(currentUserRef, {
           status: document.hidden ? Date.now() : "online",
         });
-        document.hidden && setRecepId("");
       },
       false
     );

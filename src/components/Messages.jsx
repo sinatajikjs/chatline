@@ -85,12 +85,15 @@ const Messages = ({ messages, reply, setReply }) => {
   const [firstLoad, setFirstLoad] = useState(0);
   useEffect(() => {
     setFirstLoad(firstLoad + 1);
+    scrollToBottom(firstLoad > 1 ? "smooth" : "auto");
+  }, [messages]);
 
+  useEffect(() => {
     const resizeObserver = new ResizeObserver(() => {
-      scrollToBottom(firstLoad > 2 ? "smooth" : "auto");
+      scrollToBottom("smooth");
     });
     resizeObserver.observe(messagesRef.current);
-  }, [messages, messagesRef.current?.scrollHeight]);
+  }, []);
 
   useEffect(() => {
     if (vibrate === true) {
@@ -109,6 +112,7 @@ const Messages = ({ messages, reply, setReply }) => {
       {messages.map((message) => {
         return (
           <Message
+            key={message.time}
             message={message}
             touchEndHandler={touchEndHandler}
             touchMoveHandler={touchMoveHandler}
@@ -119,8 +123,8 @@ const Messages = ({ messages, reply, setReply }) => {
         );
       })}
       <IoIosArrowDown
-        className={`fixed bottom-0 right-0 box-content text-white text-2xl z-20 mr-4 mb-[4.5rem] bg-slate-700 p-1.5 rounded-full cursor-pointer ${
-          bottom ? "opacity-0" : "opacity-100"
+        className={`fixed -bottom-0 right-0 box-content text-white text-2xl z-10 mr-4 mb-[4.5rem] bg-slate-700 p-1.5 rounded-full cursor-pointer ${
+          bottom && "-bottom-14"
         } transition-all`}
         onClick={() => scrollToBottom("smooth")}
       />

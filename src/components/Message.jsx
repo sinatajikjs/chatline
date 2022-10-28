@@ -34,7 +34,7 @@ const Message = (props) => {
         onTouchMove={touchMoveHandler}
         onTouchStart={touchStartHandler}
         onTouchEnd={touchEndHandler}
-        key={message.time}
+        
         className={`relative overflow-visible mt-2 flex transition-all duration-500 ${
           message.from === currentUser.uid
             ? "chat-rtl justify-end"

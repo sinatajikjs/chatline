@@ -32,6 +32,7 @@ const Chat = () => {
       : `${recepId + currentUser.uid}`;
   const [messages, setMessages] = useLocalStorage(id, []);
   const [reply, setReply] = useState(null);
+  const [online, setOnline] = useState(true);
 
   useEffect(() => {
     const usersRef = doc(db, "users", recepId);
@@ -48,6 +49,18 @@ const Chat = () => {
       });
       setMessages(messages);
     });
+  }, []);
+
+  document.addEventListener(
+    "visibilitychange",
+    function () {
+      if (document.hidden) setOnline(false);
+      else setOnline(true);
+    },
+    false
+  );
+  useEffect(() => {
+    const messagesRef = collection(db, "messages", id, "chat");
 
     const receivedMessages = query(
       messagesRef,
@@ -57,17 +70,18 @@ const Chat = () => {
 
     const unsubscribe = onSnapshot(receivedMessages, (querySnapshot) => {
       querySnapshot.forEach((doc) => {
-        updateDoc(doc.ref, {
-          seen: "seen",
-        });
+        if (online) {
+          updateDoc(doc.ref, {
+            seen: "seen",
+          });
+        }
       });
     });
-
     return () => {
       unsubscribe();
       localStorage.removeItem("messanger-recep");
     };
-  }, []);
+  }, [online]);
 
   const scrollToDivRef = useRef();
 
