@@ -63,7 +63,6 @@ export function AuthProvider({ children }) {
     return auth
       .createUserWithEmailAndPassword(email, password)
       .then((res) => {
-        toast.success("SuccessFully Signed up", { id: myToast });
         res.user.updateProfile({
           displayName: name,
           photoURL,
@@ -90,6 +89,7 @@ export function AuthProvider({ children }) {
     signInWithPopup(auth, Google).then((result) => {
       const { photoURL, displayName, email, uid } = result.user;
 
+      myToast = toast.loading("Signing In...");
       if (result._tokenResponse.isNewUser) {
         setDoc(doc(db, "users", uid), {
           uid,
@@ -104,9 +104,11 @@ export function AuthProvider({ children }) {
 
   function signInWithGithub() {
     const Github = new GithubAuthProvider();
+
     signInWithPopup(auth, Github).then((result) => {
       const { photoURL, displayName, email, uid } = result.user;
 
+      myToast = toast.loading("Signing In...");
       if (result._tokenResponse.isNewUser) {
         setDoc(doc(db, "users", uid), {
           uid,
@@ -194,10 +196,6 @@ export function AuthProvider({ children }) {
     );
   }
 
-  useEffect(() => {
-    if (!username || !myToast) return;
-    toast.success("SuccessFully Signed in", { id: myToast });
-  }, [username]);
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
@@ -208,6 +206,7 @@ export function AuthProvider({ children }) {
       }
       getUser(user.uid).then((res) => {
         setUsername(res.username);
+        toast.success("SuccessFully Signed In", { id: myToast });
         setCurrentUser(user);
         setLoading(false);
       });
