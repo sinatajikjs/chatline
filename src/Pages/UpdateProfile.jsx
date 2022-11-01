@@ -7,7 +7,7 @@ import { db, storage } from "../firebase";
 import { doc, updateDoc } from "firebase/firestore";
 
 const UpdateProfile = () => {
-  const { currentUser, updateProfileInfo, getUser, user } = useAuth();
+  const { currentUser, updateProfileInfo, username, user } = useAuth();
 
   const [img, setImg] = useState(currentUser.photoURL);
 
@@ -65,9 +65,12 @@ const UpdateProfile = () => {
             parseInt(currentUser.metadata.createdAt)
           ).toDateString()}`}
         </h2>
-        <Link to={"/username"}>
-          <p className="mt-5 text-blue-600 underline">change username</p>
-        </Link>
+        <div className="flex mt-5 items-center">
+          <h2>Username: {username}</h2>
+          <Link to={"/username"}>
+            <p className=" text-blue-600 underline ml-2">change</p>
+          </Link>
+        </div>
       </form>
       <Link to={"/dashboard"}>
         <p className="mt-5 text-blue-600 underline">Cancel</p>

@@ -196,7 +196,6 @@ export function AuthProvider({ children }) {
     );
   }
 
-
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (!user) {
@@ -206,9 +205,10 @@ export function AuthProvider({ children }) {
       }
       getUser(user.uid).then((res) => {
         setUsername(res.username);
-        toast.success("SuccessFully Signed In", { id: myToast });
         setCurrentUser(user);
         setLoading(false);
+        if (!myToast) return;
+        toast.success("SuccessFully Signed In", { id: myToast });
       });
 
       const currentUserRef = doc(db, "users", user.uid);

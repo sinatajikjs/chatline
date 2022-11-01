@@ -12,6 +12,7 @@ const Message = (props) => {
     touchStartHandler,
     msgRef,
     scrollHandler,
+    setImgModal,
   } = props;
 
   const { currentUser } = useAuth();
@@ -34,7 +35,6 @@ const Message = (props) => {
         onTouchMove={touchMoveHandler}
         onTouchStart={touchStartHandler}
         onTouchEnd={touchEndHandler}
-        
         className={`relative overflow-visible mt-2 flex transition-all duration-500 ${
           message.from === currentUser.uid
             ? "chat-rtl justify-end"
@@ -65,8 +65,9 @@ const Message = (props) => {
           )}
           {message.media.url && (
             <img
+              onClick={() => setImgModal(message.media.url)}
               src={message.media.url}
-              className="w-52 px-1 py-1 rounded-lg"
+              className={`w-52 px-1 py-1 rounded-lg`}
             />
           )}
 

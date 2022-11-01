@@ -20,11 +20,13 @@ import Messages from "../components/Messages";
 import Input from "../components/Input";
 import { useState } from "react";
 import useLocalStorage from "../Hooks/useLocalStorage";
+import ImgModal from "../components/ImgModal";
 
 const Chat = () => {
-  const { currentUser, username,recepId } = useAuth();
+  const { currentUser, username, recepId } = useAuth();
 
   const [recep, setRecep] = useLocalStorage("recep", "");
+  const [imgModal, setImgModal] = useState(false);
 
   const id =
     currentUser.uid > recepId
@@ -83,19 +85,17 @@ const Chat = () => {
     };
   }, [online]);
 
-  const scrollToDivRef = useRef();
 
   return !currentUser || !recepId || !username ? (
     <Navigate to="/" />
   ) : (
     <div className="bg-gray-300 absolute top-0 w-screen h-full overflow-hidden ">
       <Infobar recep={recep} />
+      {imgModal && <ImgModal setImgModal={setImgModal} src={imgModal} />}
       <Messages
-        recep={recep}
-        scrollToDivRef={scrollToDivRef}
-        currentUser={currentUser}
         setReply={setReply}
         reply={reply}
+        setImgModal={setImgModal}
         messages={messages}
       />
       <Input

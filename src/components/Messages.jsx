@@ -6,7 +6,7 @@ import { useEffect } from "react";
 import { useRef } from "react";
 import Message from "./Message";
 
-const Messages = ({ messages, reply, setReply }) => {
+const Messages = ({ messages, reply, setReply, setImgModal }) => {
   const [touched, setTouched] = useState(0);
   const [vibrate, setVibrate] = useState(false);
   const [isHorzMoved, setIsHorzMoved] = useState(false);
@@ -113,6 +113,7 @@ const Messages = ({ messages, reply, setReply }) => {
         return (
           <Message
             key={message.time}
+            setImgModal={setImgModal}
             message={message}
             touchEndHandler={touchEndHandler}
             touchMoveHandler={touchMoveHandler}
