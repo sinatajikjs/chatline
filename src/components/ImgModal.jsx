@@ -41,6 +41,14 @@ const ImgModal = ({ src, setImgModal }) => {
 
   const modalRef = useRef();
 
+  function doubleClickHandler() {
+    if (crop.scale === 1) {
+      setCrop((crop) => ({ ...crop, scale: 3 }));
+    } else {
+      setCrop({ x: 0, y: 0, scale: 1 });
+    }
+  }
+
   return (
     <div
       ref={modalRef}
@@ -60,9 +68,7 @@ const ImgModal = ({ src, setImgModal }) => {
           touchAction: "none",
         }}
         ref={imgRef}
-        onDoubleClick={() =>
-          setCrop((crop) => ({ ...crop, scale: crop.scale === 1 ? 3 : 1 }))
-        }
+        onDoubleClick={doubleClickHandler}
         className="h-full w-full relative object-contain"
         src={src}
       />

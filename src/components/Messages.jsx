@@ -126,7 +126,7 @@ const Messages = ({ messages, reply, setReply, setImgModal }) => {
       <IoIosArrowDown
         className={`fixed -bottom-0 right-0 box-content text-white text-2xl z-10 mr-4 mb-[4.5rem] bg-slate-700 p-1.5 rounded-full cursor-pointer ${
           bottom && "-bottom-14"
-        } transition-all`}
+        } transition-all duration-200`}
         onClick={() => scrollToBottom("smooth")}
       />
     </div>
