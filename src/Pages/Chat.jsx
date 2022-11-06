@@ -23,15 +23,15 @@ import useLocalStorage from "../Hooks/useLocalStorage";
 import ImgModal from "../components/ImgModal";
 
 const Chat = () => {
-  const { currentUser, recepId } = useAuth();
+  const { user, recepId } = useAuth();
 
   const [recep, setRecep] = useLocalStorage("recep", "");
   const [imgModal, setImgModal] = useState(false);
 
   const id =
-    currentUser.uid > recepId
-      ? `${currentUser.uid + recepId}`
-      : `${recepId + currentUser.uid}`;
+    user.uid > recepId
+      ? `${user.uid + recepId}`
+      : `${recepId + user.uid}`;
   const [messages, setMessages] = useLocalStorage(id, []);
   const [reply, setReply] = useState(null);
   const [online, setOnline] = useState(true);
@@ -67,7 +67,7 @@ const Chat = () => {
     const receivedMessages = query(
       messagesRef,
       where("seen", "==", "sent"),
-      where("to", "==", currentUser.uid)
+      where("to", "==", user.uid)
     );
 
     const unsubscribe = onSnapshot(receivedMessages, (querySnapshot) => {
@@ -86,7 +86,7 @@ const Chat = () => {
   }, [online]);
 
 
-  return !currentUser || !recepId ? (
+  return !user || !recepId ? (
     <Navigate to="/" />
   ) : (
     <div className="bg-gray-300 absolute top-0 w-screen h-full overflow-hidden ">

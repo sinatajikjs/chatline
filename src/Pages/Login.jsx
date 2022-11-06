@@ -7,14 +7,14 @@ const Login = () => {
   const emailRef = useRef();
   const passwordRef = useRef();
 
-  const { login, currentUser, signInWithGoogle } = useAuth();
+  const { login, user, signInWithGoogle } = useAuth();
 
   async function submitHandler(e) {
     e.preventDefault();
     login(emailRef.current.value, passwordRef.current.value);
   }
 
-  return currentUser ? (
+  return user ? (
     <Navigate to="/" />
   ) : (
     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center">

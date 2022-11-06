@@ -15,11 +15,11 @@ const Message = (props) => {
     setImgModal,
   } = props;
 
-  const { currentUser } = useAuth();
+  const { user } = useAuth();
 
   function condition() {
     if (
-      message.from === currentUser.uid ||
+      message.from === user.uid ||
       !message.media.url ||
       message.media.public
     )
@@ -36,14 +36,14 @@ const Message = (props) => {
         onTouchStart={touchStartHandler}
         onTouchEnd={touchEndHandler}
         className={`relative overflow-visible mt-2 flex transition-all duration-500 ${
-          message.from === currentUser.uid
+          message.from === user.uid
             ? "chat-rtl justify-end"
             : "chat-ltr justify-start"
         }`}
       >
         <li
           className={`max-w-[80%] relative flex flex-col rounded-lg ${
-            message.from === currentUser.uid ? "bg-violet-600" : "bg-slate-700"
+            message.from === user.uid ? "bg-violet-600" : "bg-slate-700"
           }`}
         >
           {message.replyTo && (
@@ -82,14 +82,14 @@ const Message = (props) => {
             <div className="pr-2 flex justify-end items-end text-blue-300">
               <p
                 className={`text-xs font-semibold mr-1 ${
-                  message.from === currentUser.uid
+                  message.from === user.uid
                     ? "text-blue-300"
                     : "text-slate-400"
                 }`}
               >
                 {new Date(message.time).toTimeString().substring(0, 5)}
               </p>
-              {message.from === currentUser.uid &&
+              {message.from === user.uid &&
                 (message.seen === "sending" ? (
                   <HiOutlineClock />
                 ) : message.seen === "sent" ? (

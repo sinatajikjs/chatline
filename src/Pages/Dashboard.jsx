@@ -23,7 +23,7 @@ const Dashboard = () => {
 
   const navigate = useNavigate();
 
-  const { logout, currentUser, setRecepId } = useAuth();
+  const { logout, user, setRecepId } = useAuth();
 
   function selectHandler(e) {
     setRecepId(e.currentTarget.dataset.id);
@@ -31,8 +31,8 @@ const Dashboard = () => {
   }
 
   function logoutHandler() {
-    const currentUserRef = doc(db, "users", currentUser.uid);
-    updateDoc(currentUserRef, {
+    const userRef = doc(db, "users", user.uid);
+    updateDoc(userRef, {
       status: Date.now(),
     });
 
@@ -41,7 +41,7 @@ const Dashboard = () => {
   }
 
   async function getChats() {
-    const chatsRef = collection(db, "chats", currentUser?.uid, "chats");
+    const chatsRef = collection(db, "chats", user?.uid, "chats");
     const q = query(chatsRef, orderBy("createdAt", "desc"));
 
     onSnapshot(q, (querySnapshot) => {
@@ -65,7 +65,7 @@ const Dashboard = () => {
     getChats();
   }, []);
 
-  return !currentUser ? (
+  return !user ? (
     <Navigate to="/login" />
   ) : (
     <div>
@@ -76,7 +76,7 @@ const Dashboard = () => {
           <Link className="mr-1 text-white px-3 py-1 rounded" to={"/profile"}>
             <img
               className="w-12 h-12 rounded-full object-cover"
-              src={currentUser.photoURL}
+              src={user.photoURL}
             />
           </Link>
           <HiOutlineLogout

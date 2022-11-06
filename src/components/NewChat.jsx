@@ -15,7 +15,7 @@ import {
 const NewChat = ({ chats, setModal }) => {
   const usernameRef = useRef();
 
-  const { currentUser } = useAuth();
+  const { user } = useAuth();
 
   function submitHandler(e) {
     e.preventDefault();
@@ -42,7 +42,7 @@ const NewChat = ({ chats, setModal }) => {
           });
         }
 
-        setDoc(doc(db, "chats", currentUser.uid, "chats", res.data().uid), {
+        setDoc(doc(db, "chats", user.uid, "chats", res.data().uid), {
           id: res.data().uid,
           createdAt: Timestamp.fromDate(new Date()),
         }).then(() => {

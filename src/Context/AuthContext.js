@@ -30,7 +30,6 @@ export function useAuth() {
 }
 let myToast;
 export function AuthProvider({ children }) {
-  const [currentUser, setCurrentUser] = useState();
   const [user, setUser] = useState(null);
   const [recepId, setRecepId] = useLocalStorage("recepId", "");
 
@@ -39,8 +38,8 @@ export function AuthProvider({ children }) {
   const navigate = useNavigate();
 
   async function checkUsername(username) {
-    if (currentUser) {
-      const userRef = doc(db, "users", currentUser.uid);
+    if (user) {
+      const userRef = doc(db, "users", user.uid);
       const thisUser = (await getDoc(userRef)).data();
       if (thisUser.username === username) return false;
     }
@@ -145,22 +144,10 @@ export function AuthProvider({ children }) {
     return auth.sendPasswordResetEmail(email);
   }
 
-  function updateEmail(email) {
-    return currentUser.updateEmail(email);
-  }
-
-  function updatePassword(password) {
-    return currentUser.updatePassword(password);
-  }
-
-  function updateProfileInfo(user) {
-    return updateProfile(currentUser, user);
-  }
-
-  if (currentUser) {
-    const currentUserRef = doc(db, "users", currentUser.uid);
+  if (user) {
+    const userRef = doc(db, "users", user.uid);
     window.addEventListener("beforeunload", function (e) {
-      updateDoc(currentUserRef, {
+      updateDoc(userRef, {
         status: Date.now(),
       });
     });
@@ -168,7 +155,7 @@ export function AuthProvider({ children }) {
     document.addEventListener(
       "visibilitychange",
       function () {
-        updateDoc(currentUserRef, {
+        updateDoc(userRef, {
           status: document.hidden ? Date.now() : "online",
         });
       },
@@ -180,18 +167,16 @@ export function AuthProvider({ children }) {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (!user) {
         setUser(null);
-        setCurrentUser(user);
         return setLoading(false);
       }
       const usersRef = doc(db, "users", user.uid);
       getDoc(usersRef).then((res) => {
-        setCurrentUser(user);
         setLoading(false);
-        setUser(res);
+        setUser(res.data());
       });
 
-      const currentUserRef = doc(db, "users", user.uid);
-      updateDoc(currentUserRef, {
+      const userRef = doc(db, "users", user.uid);
+      updateDoc(userRef, {
         status: "online",
       });
       if (!myToast) return;
@@ -201,17 +186,13 @@ export function AuthProvider({ children }) {
   }, []);
 
   const value = {
-    currentUser,
     login,
     signup,
     logout,
     resetPassword,
-    updateEmail,
-    updatePassword,
     checkUserEmail,
     signInWithGoogle,
     signInWithGithub,
-    updateProfileInfo,
     checkUsername,
     user,
     recepId,

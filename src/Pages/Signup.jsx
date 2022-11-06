@@ -11,7 +11,7 @@ const Signup = ({ setEmailPass }) => {
 
   const [loading, setLoading] = useState(false);
 
-  const { currentUser, signInWithGoogle, checkUserEmail } = useAuth();
+  const { user, signInWithGoogle, checkUserEmail } = useAuth();
 
   const navigate = useNavigate();
 
@@ -44,7 +44,7 @@ const Signup = ({ setEmailPass }) => {
     navigate("/profile");
   }
 
-  return currentUser ? (
+  return user ? (
     <Navigate to="/profile" />
   ) : (
     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center">

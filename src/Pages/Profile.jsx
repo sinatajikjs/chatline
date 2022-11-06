@@ -8,9 +8,9 @@ import { db, storage } from "../firebase";
 import { doc, updateDoc } from "firebase/firestore";
 
 const Profile = ({ emailPass }) => {
-  const { currentUser, signup, user } = useAuth();
+  const { user, signup } = useAuth();
 
-  const [img, setImg] = useState(currentUser?.photoURL);
+  const [img, setImg] = useState(user?.photoURL);
   const [loading, setLoading] = useState(false);
   // const [user, setUser] = useState(null);
 
@@ -41,10 +41,10 @@ const Profile = ({ emailPass }) => {
   function submitHandler(e) {
     e.preventDefault();
     setLoading(true);
-    if (currentUser) {
+    if (user) {
       // update profile
       const myToast = toast.loading("Updating...");
-      const usersRef = doc(db, "users", currentUser.uid);
+      const usersRef = doc(db, "users", user.uid);
       return updateDoc(usersRef, {
         fullName: nameRef.current.value,
         username: usernameRef.current.value,
@@ -127,7 +127,7 @@ const Profile = ({ emailPass }) => {
           } text-white px-2 py-1 rounded text-lg mt-4 w-full`}
           disabled={loading}
         >
-          {currentUser ? "Update" : "Finish"}
+          {user ? "Update" : "Finish"}
         </button>
       </form>
     </div>

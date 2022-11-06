@@ -6,12 +6,9 @@ import { db } from "../firebase";
 const User = ({ c, selectHandler }) => {
   const [lastMsg, setLastMsg] = useState(null);
   const [unreadMsgs, setUnreadMsgs] = useState("");
-  const { currentUser } = useAuth();
+  const { user } = useAuth();
 
-  const id =
-    currentUser.uid > c.uid
-      ? `${currentUser.uid + c.uid}`
-      : `${c.uid + currentUser.uid}`;
+  const id = user.uid > c.uid ? `${user.uid + c.uid}` : `${c.uid + user.uid}`;
 
   useEffect(() => {
     onSnapshot(doc(db, "lastMsg", id), (doc) => {
@@ -21,7 +18,7 @@ const User = ({ c, selectHandler }) => {
     const messagesRef = collection(db, "messages", id, "chat");
     const receivedUnreadMsgs = query(
       messagesRef,
-      where("to", "==", currentUser.uid),
+      where("to", "==", user.uid),
       where("seen", "==", "sent")
     );
     onSnapshot(receivedUnreadMsgs, (snap) => {
@@ -53,7 +50,7 @@ const User = ({ c, selectHandler }) => {
           <h2 className="text-xl">{c.name}</h2>
           {lastMsg && (
             <p className="text-gray-500">{`${
-              lastMsg.from === currentUser.uid ? "You: " : ""
+              lastMsg.from === user.uid ? "You: " : ""
             }${lastMsg.text.substr(0, 19)}${
               lastMsg.text.length > 19 ? "..." : ""
             }`}</p>
