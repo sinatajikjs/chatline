@@ -1,34 +1,30 @@
-import { AuthProvider, useAuth } from "../Context/AuthContext";
+import { AuthProvider } from "../Context/AuthContext";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-import { Toaster, toast } from "react-hot-toast";
-import axios from "axios";
-import { useEffect, useState } from "react";
 import Signup from "../Pages/Signup";
-import UpdateProfile from "../Pages/UpdateProfile";
 import Restore from "../Pages/Restore";
 import Chat from "../Pages/Chat";
 import Dashboard from "../Pages/Dashboard";
 import Login from "../Pages/Login";
-import useLocalStorage from "../Hooks/useLocalStorage";
-import Username from "../Pages/Username";
 import Profile from "../Pages/Profile";
-import Wellcome from "../Pages/Wellcome";
+import { useState } from "react";
 
 const App = () => {
+  const [emailPass, setEmailPass] = useState({ email: "", password: "" });
+
   return (
     <BrowserRouter>
       <AuthProvider>
         <Routes>
-          <Route path="/" element={<Wellcome />} />
+          <Route path="/" element={<Dashboard />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
-          <Route path="/dashboard" element={<Dashboard />} />
+          <Route
+            path="/signup"
+            element={<Signup setEmailPass={setEmailPass} />}
+          />
           <Route path="/chat" element={<Chat />} />
           <Route path="/restore" element={<Restore />} />
-          <Route path="/username" element={<Username />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/update-profile" element={<UpdateProfile />} />
+          <Route path="/profile" element={<Profile emailPass={emailPass} />} />
         </Routes>
       </AuthProvider>
     </BrowserRouter>

@@ -23,7 +23,7 @@ const Username = () => {
         ? toast.error("Username is Taken", { id: myToast })
         : updateUsername(currentUser.uid, inputValue).then(() => {
             toast.dismiss(myToast);
-            if (username) return navigate("/dashboard");
+            if (username) return navigate("/");
             navigate("/profile");
           })
     );
@@ -44,7 +44,7 @@ const Username = () => {
   }, [username]);
 
   return !currentUser ? (
-    <Navigate to="/" />
+    <Navigate to="/login" />
   ) : (
     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center">
       <form

@@ -6,10 +6,12 @@ import { MdReply } from "react-icons/md";
 import { IoMdClose } from "react-icons/io";
 import { ImAttachment, ImCross } from "react-icons/im";
 import { db, storage } from "../firebase";
+import { useAuth } from "../Context/AuthContext";
 
-const Input = ({ recep, currentUser, reply, setReply }) => {
+const Input = ({ recep, reply, setReply }) => {
   const [img, setImg] = useState(null);
   const [imgUrl, setImgUrl] = useState(null);
+  const { user, recepId } = useAuth();
 
   const fileRef = useRef();
 
@@ -27,9 +29,9 @@ const Input = ({ recep, currentUser, reply, setReply }) => {
     inputValue = inputRef.current.value;
     inputRef.current.value = "";
     const id =
-      currentUser.uid > recep.uid
-        ? `${currentUser.uid + recep.uid}`
-        : `${recep.uid + currentUser.uid}`;
+      user.uid > recep.uid
+        ? `${user.uid + recep.uid}`
+        : `${recep.uid + user.uid}`;
 
     let url;
     const messageId = Date.now();
@@ -37,8 +39,8 @@ const Input = ({ recep, currentUser, reply, setReply }) => {
     const docRef = doc(db, "messages", id, "chat", `${messageId}`);
     await setDoc(docRef, {
       text: inputValue,
-      from: currentUser.uid,
-      senderName: currentUser.displayName,
+      from: user.uid,
+      senderName: user.displayName,
       to: recep.uid,
       time: messageId,
       createdAt: Timestamp.fromDate(new Date()),
@@ -52,7 +54,7 @@ const Input = ({ recep, currentUser, reply, setReply }) => {
 
     await setDoc(doc(db, "lastMsg", id), {
       text: inputValue || "Photo",
-      from: currentUser.uid,
+      from: user.uid,
       to: recep.uid,
       createdAt: Timestamp.fromDate(new Date()),
     });
@@ -75,12 +77,12 @@ const Input = ({ recep, currentUser, reply, setReply }) => {
         seen: "sent",
       });
     }
-    setDoc(doc(db, "chats", currentUser.uid, "chats", recep.uid), {
+    setDoc(doc(db, "chats", user.uid, "chats", recep.uid), {
       id: recep.uid,
       createdAt: Timestamp.fromDate(new Date()),
     }).then(() => {
-      setDoc(doc(db, "chats", recep.uid, "chats", currentUser.uid), {
-        id: currentUser.uid,
+      setDoc(doc(db, "chats", recep.uid, "chats", user.uid), {
+        id: user.uid,
         createdAt: Timestamp.fromDate(new Date()),
       });
     });
@@ -92,13 +94,13 @@ const Input = ({ recep, currentUser, reply, setReply }) => {
   };
 
   const textChangeHandler = () => {
-    const currentUserRef = doc(db, "users", currentUser.uid);
-    updateDoc(currentUserRef, {
+    const userRef = doc(db, "users", user.uid);
+    updateDoc(userRef, {
       status: "typing",
       currentRecep: recep.uid,
     });
     setTimeout(() => {
-      updateDoc(currentUserRef, {
+      updateDoc(userRef, {
         status: "online",
       });
     }, 1000);

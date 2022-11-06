@@ -9,10 +9,8 @@ import {
   query,
   onSnapshot,
   doc,
-  where,
   orderBy,
   updateDoc,
-  getDoc,
   getDocs,
 } from "firebase/firestore";
 import NewChat from "../components/NewChat";
@@ -25,7 +23,7 @@ const Dashboard = () => {
 
   const navigate = useNavigate();
 
-  const { logout, currentUser, username, setRecepId } = useAuth();
+  const { logout, currentUser, setRecepId } = useAuth();
 
   function selectHandler(e) {
     setRecepId(e.currentTarget.dataset.id);
@@ -43,7 +41,7 @@ const Dashboard = () => {
   }
 
   async function getChats() {
-    const chatsRef = collection(db, "chats", currentUser.uid, "chats");
+    const chatsRef = collection(db, "chats", currentUser?.uid, "chats");
     const q = query(chatsRef, orderBy("createdAt", "desc"));
 
     onSnapshot(q, (querySnapshot) => {
@@ -68,19 +66,14 @@ const Dashboard = () => {
   }, []);
 
   return !currentUser ? (
-    <Navigate to="/" />
-  ) : !username ? (
-    <Navigate to="/username" />
+    <Navigate to="/login" />
   ) : (
     <div>
       <div className="bg-teal-600 h-20 flex items-center px-5 justify-between">
         <h1 className="text-3xl text-white font-semibold mt-0 p-0">Chats</h1>
 
         <div className="flex items-center">
-          <Link
-            className="mr-1 text-white px-3 py-1 rounded"
-            to={"/update-profile"}
-          >
+          <Link className="mr-1 text-white px-3 py-1 rounded" to={"/profile"}>
             <img
               className="w-12 h-12 rounded-full object-cover"
               src={currentUser.photoURL}

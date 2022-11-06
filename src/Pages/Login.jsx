@@ -1,5 +1,4 @@
-import { useEffect, useRef, useState } from "react";
-import toast from "react-hot-toast";
+import { useRef } from "react";
 import { useAuth } from "../Context/AuthContext";
 import { Link } from "react-router-dom";
 import { Navigate } from "react-router-dom";
@@ -8,7 +7,7 @@ const Login = () => {
   const emailRef = useRef();
   const passwordRef = useRef();
 
-  const { login, currentUser } = useAuth();
+  const { login, currentUser, signInWithGoogle } = useAuth();
 
   async function submitHandler(e) {
     e.preventDefault();
@@ -16,12 +15,12 @@ const Login = () => {
   }
 
   return currentUser ? (
-    <Navigate to="/dashboard" />
+    <Navigate to="/" />
   ) : (
     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center">
       <form
         onSubmit={submitHandler}
-        className="flex flex-col items-center bg-white drop-shadow-xl py-4 px-8 rounded-md w-80 border border-gray-300"
+        className="flex flex-col items-center bg-white drop-shadow-xl pt-4 px-8 rounded-md w-80 border border-gray-300"
       >
         <h2 className="text-3xl font-semibold mb-3">Login</h2>
 
@@ -56,6 +55,13 @@ const Login = () => {
         <Link className="mt-4 text-blue-600 underline" to={"/restore"}>
           Forgot Password?
         </Link>
+        <button
+          type="button"
+          className="border border-gray-400 rounded p-2 mt-2 text-2xl mb-4"
+          onClick={signInWithGoogle}
+        >
+          Sign In With Google
+        </button>
       </form>
       <Link className="mt-4" to={"/signup"}>
         <p className="text-blue-600 underline">Need an account? Sign Up</p>

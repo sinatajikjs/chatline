@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import toast from "react-hot-toast";
 import { useAuth } from "../Context/AuthContext";
 import { db } from "../firebase";
@@ -6,10 +6,8 @@ import {
   collection,
   query,
   where,
-  onSnapshot,
   doc,
   setDoc,
-  addDoc,
   Timestamp,
   getDocs,
 } from "firebase/firestore";
@@ -57,10 +55,6 @@ const NewChat = ({ chats, setModal }) => {
     });
   }
 
-  useEffect(() => {
-    usernameRef.current.focus();
-  }, []);
-
   return (
     <>
       <div
@@ -78,6 +72,7 @@ const NewChat = ({ chats, setModal }) => {
           <input
             className="border border-stone-400 rounded text-medium px-2 py-1 w-full mb-1 mt-1"
             type="text"
+            autoFocus
             required
             name="text"
             ref={usernameRef}
@@ -93,7 +88,7 @@ const NewChat = ({ chats, setModal }) => {
         <button
           onClick={() => setModal(false)}
           className="mt-4 text-blue-600 underline"
-          to={"/dashboard"}
+          to={"/"}
         >
           Cancel
         </button>

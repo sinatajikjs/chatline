@@ -31,38 +31,41 @@ export function useAuth() {
 let myToast;
 export function AuthProvider({ children }) {
   const [currentUser, setCurrentUser] = useState();
-  const [username, setUsername] = useState(null);
+  const [user, setUser] = useState(null);
   const [recepId, setRecepId] = useLocalStorage("recepId", "");
 
   const [loading, setLoading] = useState(true);
 
   const navigate = useNavigate();
 
-  async function signup(name, email, password, passwordConfirmValue) {
-    if (!email.split("@")[1].includes(".")) {
-      return toast.error("Invalid Email Address");
+  async function checkUsername(username) {
+    if (currentUser) {
+      const userRef = doc(db, "users", currentUser.uid);
+      const thisUser = (await getDoc(userRef)).data();
+      if (thisUser.username === username) return false;
     }
-    if (password !== passwordConfirmValue) {
-      return toast.error("Passwords are not match");
-    }
-    if (password.length < 6) return toast.error("Password is Weak");
 
+    const usersRef = collection(db, "users");
+    const q = query(usersRef, where("username", "==", username));
+    const querySnapshot = await getDocs(q);
+    let user;
+    querySnapshot.forEach((doc) => {
+      user = doc.data();
+    });
+    return user;
+  }
+
+  async function signup(name, email, password, photoURL, username, bio) {
     myToast = toast.loading("Signing Up...");
 
-    const userExist = await auth.fetchSignInMethodsForEmail(email);
-    if (userExist > 0) {
-      toast.error("User is Already Exist", {
-        id: myToast,
-      });
-      return;
-    }
+    const userNameExist = await checkUsername(username);
 
-    const photoURL =
-      "https://firebasestorage.googleapis.com/v0/b/authpractice-dev.appspot.com/o/avatar%2Fuser.jpg?alt=media&token=c52387c3-0e60-46f5-9f45-7d09014a9f76";
+    if (userNameExist) return toast.error("Username is Taken", { id: myToast });
 
     return auth
       .createUserWithEmailAndPassword(email, password)
       .then((res) => {
+        navigate("/");
         res.user.updateProfile({
           displayName: name,
           photoURL,
@@ -70,8 +73,10 @@ export function AuthProvider({ children }) {
 
         setDoc(doc(db, "users", res.user.uid), {
           uid: res.user.uid,
-          photoURL,
-          name,
+          photoURL: photoURL || "",
+          fullName: name,
+          username,
+          bio: bio || "",
           email,
           createdAt: Timestamp.fromDate(new Date()),
         });
@@ -125,31 +130,6 @@ export function AuthProvider({ children }) {
     return auth.fetchSignInMethodsForEmail(email);
   }
 
-  async function checkUsername(username) {
-    const userRef = doc(db, "users", currentUser.uid);
-    const thisUser = (await getDoc(userRef)).data();
-    if (thisUser.username === username) return false;
-
-    const usersRef = collection(db, "users");
-    const q = query(usersRef, where("username", "==", username));
-    const querySnapshot = await getDocs(q);
-    let user;
-    querySnapshot.forEach((doc) => {
-      user = doc.data();
-    });
-    return user;
-  }
-
-  function updateUsername(uid, username) {
-    const usersRef = doc(db, "users", uid);
-    return updateDoc(usersRef, { username }).then(() => setUsername(username));
-  }
-
-  async function getUser(uid) {
-    const usersRef = doc(db, "users", uid);
-    return (await getDoc(usersRef)).data();
-  }
-
   function login(email, password) {
     myToast = toast.loading("Signing In...");
     auth.signInWithEmailAndPassword(email, password).catch(() => {
@@ -199,22 +179,23 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (!user) {
-        setUsername(null);
+        setUser(null);
         setCurrentUser(user);
         return setLoading(false);
       }
-      getUser(user.uid).then((res) => {
-        setUsername(res.username);
+      const usersRef = doc(db, "users", user.uid);
+      getDoc(usersRef).then((res) => {
         setCurrentUser(user);
         setLoading(false);
-        if (!myToast) return;
-        toast.success("SuccessFully Signed In", { id: myToast });
+        setUser(res);
       });
 
       const currentUserRef = doc(db, "users", user.uid);
       updateDoc(currentUserRef, {
         status: "online",
       });
+      if (!myToast) return;
+      toast.success("SuccessFully Signed In", { id: myToast });
     });
     return unsubscribe;
   }, []);
@@ -232,9 +213,7 @@ export function AuthProvider({ children }) {
     signInWithGithub,
     updateProfileInfo,
     checkUsername,
-    updateUsername,
-    getUser,
-    username,
+    user,
     recepId,
     setRecepId,
   };

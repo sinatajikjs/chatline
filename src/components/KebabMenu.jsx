@@ -6,15 +6,15 @@ import { useAuth } from "../Context/AuthContext";
 import { db } from "../firebase";
 
 const KebabMenu = ({ recep }) => {
-  const { currentUser } = useAuth();
+  const { user } = useAuth();
 
   const [menu, setMenu] = useState(false);
 
   const navigate = useNavigate();
 
   function deleteHandler() {
-    const chatsRef = doc(db, "chats", currentUser.uid, "chats", recep.uid);
-    deleteDoc(chatsRef).then(() => navigate("/dashboard"));
+    const chatsRef = doc(db, "chats", user.uid, "chats", recep.uid);
+    deleteDoc(chatsRef).then(() => navigate("/"));
   }
 
   return (

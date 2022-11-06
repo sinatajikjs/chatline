@@ -23,7 +23,7 @@ import useLocalStorage from "../Hooks/useLocalStorage";
 import ImgModal from "../components/ImgModal";
 
 const Chat = () => {
-  const { currentUser, username, recepId } = useAuth();
+  const { currentUser, recepId } = useAuth();
 
   const [recep, setRecep] = useLocalStorage("recep", "");
   const [imgModal, setImgModal] = useState(false);
@@ -86,7 +86,7 @@ const Chat = () => {
   }, [online]);
 
 
-  return !currentUser || !recepId || !username ? (
+  return !currentUser || !recepId ? (
     <Navigate to="/" />
   ) : (
     <div className="bg-gray-300 absolute top-0 w-screen h-full overflow-hidden ">
@@ -102,7 +102,6 @@ const Chat = () => {
         setMessages={setMessages}
         messages={messages}
         recep={recep}
-        currentUser={currentUser}
         setReply={setReply}
         reply={reply}
       />

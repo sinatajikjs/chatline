@@ -4,13 +4,13 @@ import { useAuth } from "../Context/AuthContext";
 import KebabMenu from "./KebabMenu";
 
 const Infobar = ({ recep }) => {
-  const { currentUser } = useAuth();
+  const { user } = useAuth();
 
   const getUserStatus = () => {
     if (!recep) return;
     if (recep.status === "online") return "online";
     if (recep.status === "typing") {
-      return recep.currentRecep === currentUser.uid ? "typing..." : "online";
+      return recep.currentRecep === user.uid ? "typing..." : "online";
     }
 
     const weekday = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -46,7 +46,7 @@ const Infobar = ({ recep }) => {
   return (
     <section className="flex items-center justify-between bg-teal-600 py-2 fixed w-screen top-0 z-10 px-2">
       <div className="flex items-center">
-        <Link to="/dashboard">
+        <Link to="/">
           <BsArrowLeftShort className="text-4xl cursor-pointer text-white mr-1" />
         </Link>
         <img

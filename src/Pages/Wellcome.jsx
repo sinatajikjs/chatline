@@ -4,7 +4,7 @@ import { useAuth } from "../Context/AuthContext";
 const Wellcome = () => {
   const { signInWithGoogle, signInWithGithub, currentUser } = useAuth();
   return currentUser ? (
-    <Navigate to="/dashboard" />
+    <Navigate to="/" />
   ) : (
     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center bg-white drop-shadow-xl py-4 px-8 rounded-md w-max border border-gray-300">
       <h2 className="text-2xl font-medium mb-7">Wellcome To Messanger</h2>

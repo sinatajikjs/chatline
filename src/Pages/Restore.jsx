@@ -64,7 +64,7 @@ const Restore = () => {
         >
           Reset Password
         </button>
-        <Link className="mt-4 text-blue-600 underline" to={"/"}>
+        <Link className="mt-4 text-blue-600 underline" to={"/login"}>
           Login
         </Link>
       </form>
