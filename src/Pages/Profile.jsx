@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import toast from "react-hot-toast";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import userAvatar from "../assets/user.jpg";
 import { useAuth } from "../Context/AuthContext";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
@@ -8,20 +8,19 @@ import { db, storage } from "../firebase";
 import { doc, updateDoc } from "firebase/firestore";
 
 const Profile = ({ emailPass }) => {
-  const { user, signup } = useAuth();
+  const { user, signup, updateProfile, checkUsername } = useAuth();
 
   const [img, setImg] = useState(user?.photoURL);
   const [loading, setLoading] = useState(false);
-  // const [user, setUser] = useState(null);
+  const [usernameValue, setUsernameValue] = useState(user?.username);
 
   const nameRef = useRef();
-  const usernameRef = useRef();
   const bioRef = useRef();
   const fileRef = useRef();
 
   const navigate = useNavigate();
 
-  async function changeHandler(e) {
+  async function imgChangeHandler(e) {
     const myToast = toast.loading("Uploading image...");
     setLoading(true);
 
@@ -38,18 +37,38 @@ const Profile = ({ emailPass }) => {
     }
   }
 
-  function submitHandler(e) {
+  const usernameChangeHandler = (e) => {
+    let myToast;
+    toast.dismiss(myToast);
+    if (!Boolean(e.target.value.match(/^[A-Za-z0-9._ ]*$/))) {
+      return (myToast = toast.error(
+        "Only letters, numbers, periods and underscores is accepted"
+      ));
+    }
+    setUsernameValue(e.target.value.toLowerCase().replaceAll(" ", "_"));
+  };
+
+  async function submitHandler(e) {
     e.preventDefault();
+    if (usernameValue.length < 5)
+      return toast.error("Username must be more than 4 letters");
     setLoading(true);
     if (user) {
-      // update profile
       const myToast = toast.loading("Updating...");
-      const usersRef = doc(db, "users", user.uid);
-      return updateDoc(usersRef, {
-        fullName: nameRef.current.value,
-        username: usernameRef.current.value,
-        bio: bioRef.current.value,
-      }).then(() => {
+
+      // update profile
+      const userExist = await checkUsername(usernameValue);
+      if (userExist) {
+        setLoading(false);
+        return toast.error("Username is Taken", { id: myToast });
+      }
+
+      updateProfile(
+        nameRef.current.value,
+        usernameValue,
+        bioRef.current.value,
+        img
+      ).then(() => {
         setLoading(false);
         toast.success("Updated SuccessFully", { id: myToast });
         navigate("/");
@@ -60,12 +79,11 @@ const Profile = ({ emailPass }) => {
         emailPass.email,
         emailPass.password,
         img,
-        usernameRef.current.value,
+        usernameValue,
         bioRef.current.value
       ).then(() => setLoading(false));
     }
   }
-
 
   return (
     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center">
@@ -84,7 +102,7 @@ const Profile = ({ emailPass }) => {
           <input
             type="file"
             ref={fileRef}
-            onChange={changeHandler}
+            onChange={imgChangeHandler}
             id="photo"
             className="hidden"
           />
@@ -92,12 +110,12 @@ const Profile = ({ emailPass }) => {
         <div className="flex flex-col my-1.5 w-full">
           <label htmlFor="name">Username</label>
           <input
-            defaultValue={user?.username}
             className="border border-stone-400 rounded text-medium px-2 py-1 w-full mt-1"
             type="text"
             required
+            value={usernameValue}
+            onChange={usernameChangeHandler}
             name="name"
-            ref={usernameRef}
           />
         </div>
         <div className="flex flex-col my-1.5 w-full">

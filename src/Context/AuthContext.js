@@ -39,19 +39,17 @@ export function AuthProvider({ children }) {
 
   async function checkUsername(username) {
     if (user) {
-      const userRef = doc(db, "users", user.uid);
-      const thisUser = (await getDoc(userRef)).data();
-      if (thisUser.username === username) return false;
+      if (user.username === username) return false;
     }
 
     const usersRef = collection(db, "users");
     const q = query(usersRef, where("username", "==", username));
     const querySnapshot = await getDocs(q);
-    let user;
+    let userInfo;
     querySnapshot.forEach((doc) => {
-      user = doc.data();
+      userInfo = doc.data();
     });
-    return user;
+    return userInfo;
   }
 
   async function signup(name, email, password, photoURL, username, bio) {
@@ -98,30 +96,26 @@ export function AuthProvider({ children }) {
         setDoc(doc(db, "users", uid), {
           uid,
           photoURL,
-          name: displayName,
+          fullName: displayName,
           email,
           createdAt: Timestamp.fromDate(new Date()),
         });
+      } else {
+        navigate("/");
       }
     });
   }
 
-  function signInWithGithub() {
-    const Github = new GithubAuthProvider();
-
-    signInWithPopup(auth, Github).then((result) => {
-      const { photoURL, displayName, email, uid } = result.user;
-
-      myToast = toast.loading("Signing In...");
-      if (result._tokenResponse.isNewUser) {
-        setDoc(doc(db, "users", uid), {
-          uid,
-          photoURL,
-          name: displayName,
-          email,
-          createdAt: Timestamp.fromDate(new Date()),
-        });
-      }
+  async function updateProfile(fullName, username, bio, imgUrl) {
+    const usersRef = doc(db, "users", user.uid);
+    await updateDoc(usersRef, {
+      fullName,
+      username,
+      photoURL: imgUrl,
+      bio,
+    });
+    return getDoc(usersRef).then((res) => {
+      setUser(res.data());
     });
   }
 
@@ -169,18 +163,20 @@ export function AuthProvider({ children }) {
         setUser(null);
         return setLoading(false);
       }
+
       const usersRef = doc(db, "users", user.uid);
       getDoc(usersRef).then((res) => {
         setLoading(false);
         setUser(res.data());
+        if (myToast) {
+          toast.success("SuccessFully Signed In", { id: myToast });
+        }
       });
 
       const userRef = doc(db, "users", user.uid);
       updateDoc(userRef, {
         status: "online",
       });
-      if (!myToast) return;
-      toast.success("SuccessFully Signed In", { id: myToast });
     });
     return unsubscribe;
   }, []);
@@ -192,9 +188,9 @@ export function AuthProvider({ children }) {
     resetPassword,
     checkUserEmail,
     signInWithGoogle,
-    signInWithGithub,
     checkUsername,
     user,
+    updateProfile,
     recepId,
     setRecepId,
   };

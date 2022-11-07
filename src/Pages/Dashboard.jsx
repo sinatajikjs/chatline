@@ -62,6 +62,7 @@ const Dashboard = () => {
   }
 
   useEffect(() => {
+    if (user && !user.username) navigate("/profile");
     getChats();
   }, []);
 
