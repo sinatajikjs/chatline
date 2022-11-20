@@ -64,7 +64,7 @@ export function AuthProvider({ children }) {
       .then((res) => {
         navigate("/");
         res.user.updateProfile({
-          displayName: name,
+          fullName: name,
           photoURL,
         });
 
@@ -89,14 +89,14 @@ export function AuthProvider({ children }) {
     const Google = new GoogleAuthProvider();
 
     signInWithPopup(auth, Google).then((result) => {
-      const { photoURL, displayName, email, uid } = result.user;
+      const { photoURL, fullName, email, uid } = result.user;
 
       myToast = toast.loading("Signing In...");
       if (result._tokenResponse.isNewUser) {
         setDoc(doc(db, "users", uid), {
           uid,
           photoURL,
-          fullName: displayName,
+          fullName: fullName,
           email,
           createdAt: Timestamp.fromDate(new Date()),
         });

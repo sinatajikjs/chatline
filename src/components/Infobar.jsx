@@ -54,7 +54,7 @@ const Infobar = ({ recep }) => {
           src={recep.photoURL}
         />
         <div className="ml-3 flex flex-col">
-          <h2 className="text-white text-2xl">{recep.name}</h2>
+          <h2 className="text-white text-2xl">{recep.fullName}</h2>
           <p className="text-teal-300">{getUserStatus()}</p>
         </div>
       </div>

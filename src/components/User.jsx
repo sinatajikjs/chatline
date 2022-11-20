@@ -11,6 +11,7 @@ const User = ({ c, selectHandler }) => {
   const id = user.uid > c.uid ? `${user.uid + c.uid}` : `${c.uid + user.uid}`;
 
   useEffect(() => {
+    console.log(c);
     onSnapshot(doc(db, "lastMsg", id), (doc) => {
       setLastMsg(doc.data());
     });
@@ -47,7 +48,7 @@ const User = ({ c, selectHandler }) => {
           )}
         </div>
         <div className="ml-2">
-          <h2 className="text-xl">{c.name}</h2>
+          <h2 className="text-xl">{c.fullName}</h2>
           {lastMsg && (
             <p className="text-gray-500">{`${
               lastMsg.from === user.uid ? "You: " : ""

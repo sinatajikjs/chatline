@@ -2,6 +2,8 @@ import { useRef } from "react";
 import { useAuth } from "../Context/AuthContext";
 import { Link } from "react-router-dom";
 import { Navigate } from "react-router-dom";
+import loginSvg from "../assets/login.svg";
+import { TextField } from "@mui/material";
 
 const Login = () => {
   const emailRef = useRef();
@@ -17,12 +19,16 @@ const Login = () => {
   return user ? (
     <Navigate to="/" />
   ) : (
-    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center">
+    <div className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center">
+      <img className="mt-8" src={loginSvg} alt="" />
       <form
         onSubmit={submitHandler}
-        className="flex flex-col items-center bg-white drop-shadow-xl pt-4 px-8 rounded-md w-80 border border-gray-300"
+        className="flex flex-col items-center w-80"
       >
-        <h2 className="text-3xl font-semibold mb-3">Login</h2>
+        <h2 className="text-3xl font-semibold mb-3 self-start">Login</h2>
+
+        <TextField variant="standard" label="Email" />
+        <TextField variant="standard" label="Password" />
 
         <div className="flex flex-col my-1.5 w-full">
           <label htmlFor="email">Email</label>
