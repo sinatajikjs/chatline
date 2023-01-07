@@ -51,7 +51,7 @@ const Infobar = ({ recep }) => {
         </Link>
         <img
           className="w-14 h-14 rounded-full object-cover "
-          src={recep.photoURL}
+          src={recep.photoURL || "/user.jpg"}
         />
         <div className="ml-3 flex flex-col">
           <h2 className="text-white text-2xl">{recep.fullName}</h2>

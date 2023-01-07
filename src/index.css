@@ -1,27 +1,21 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-.chat-rtl {
-  direction: rtl;
+
+.scrollbar-hiden::-webkit-scrollbar {
+  display: none;
 }
-.chat-rtl {
-  direction: ltr;
+.scrollbar-hiden {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
-.messages::-webkit-scrollbar {
-  display: none;
+.otp-input::-webkit-outer-spin-button,
+.otp-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
-.scrollerDiv > div::-webkit-scrollbar {
-  display: none;
-}
-.scrollerDiv > div {
-  width: 100%;
-  overflow-x: hidden;
-}
-.scrollerDiv > button {
-  display: none;
-}
-.messages {
-  width: 100%;
-  overflow-x: hidden;
+
+.otp-input[type="number"] {
+  -moz-appearance: textfield;
 }

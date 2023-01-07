@@ -77,7 +77,7 @@ const Dashboard = () => {
           <Link className="mr-1 text-white px-3 py-1 rounded" to={"/profile"}>
             <img
               className="w-12 h-12 rounded-full object-cover"
-              src={user.photoURL}
+              src={user.photoURL || "/user.jpg"}
             />
           </Link>
           <HiOutlineLogout

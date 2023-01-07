@@ -1,6 +1,5 @@
 import { IoIosArrowDown } from "react-icons/io";
 
-import "react-loading-skeleton/dist/skeleton.css";
 import { useState } from "react";
 import { useEffect } from "react";
 import { useRef } from "react";
@@ -105,7 +104,7 @@ const Messages = ({ messages, reply, setReply, setImgModal }) => {
     <div
       ref={messagesRef}
       onScroll={handleScroll}
-      className={`messages overflow-auto px-3 mt-20 flex flex-col relative overflow-auto ${
+      className={`scrollbar-hiden overflow-x-hidden px-3 mt-20 flex flex-col relative overflow-auto ${
         reply ? "h-[calc(100%_-_192px)]" : "h-[calc(100%_-_148px)]"
       } hide-scroll-bar transition-all`}
     >

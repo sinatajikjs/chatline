@@ -1,14 +1,12 @@
 import { useRef, useState } from "react";
 import toast from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
-import userAvatar from "../assets/user.jpg";
+import { Navigate, useNavigate } from "react-router-dom";
 import { useAuth } from "../Context/AuthContext";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import { db, storage } from "../firebase";
-import { doc, updateDoc } from "firebase/firestore";
+import { storage } from "../firebase";
 
-const Profile = ({ emailPass }) => {
-  const { user, signup, updateProfile, checkUsername } = useAuth();
+const Profile = () => {
+  const { user, updateProfile, checkUsername } = useAuth();
 
   const [img, setImg] = useState(user?.photoURL);
   const [loading, setLoading] = useState(false);
@@ -25,7 +23,7 @@ const Profile = ({ emailPass }) => {
     setLoading(true);
 
     const imgValue = e.target.files[0];
-    const imgRef = ref(storage, `avatar/${emailPass.email}`);
+    const imgRef = ref(storage, `avatar/${user.phoneNumber}`);
     try {
       const snap = await uploadBytes(imgRef, imgValue);
       const url = await getDownloadURL(ref(storage, snap.ref.fullPath));
@@ -73,19 +71,12 @@ const Profile = ({ emailPass }) => {
         toast.success("Updated SuccessFully", { id: myToast });
         navigate("/");
       });
-    } else {
-      signup(
-        nameRef.current.value,
-        emailPass.email,
-        emailPass.password,
-        img,
-        usernameValue,
-        bioRef.current.value
-      ).then(() => setLoading(false));
     }
   }
 
-  return (
+  return !user ? (
+    <Navigate to="/login" />
+  ) : (
     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center">
       <form
         onSubmit={submitHandler}
@@ -95,7 +86,7 @@ const Profile = ({ emailPass }) => {
           <label htmlFor="photo">
             <img
               className="w-24 h-24 object-cover rounded-full border-2 border-gray-400 cursor-pointer"
-              src={img || userAvatar}
+              src={img || "/user.jpg"}
               alt=""
             />
           </label>

@@ -37,7 +37,6 @@ const Input = ({ recep, reply, setReply }) => {
     const messageId = Date.now();
 
     const docRef = doc(db, "messages", id, "chat", `${messageId}`);
-    console.log(user);
     await setDoc(docRef, {
       text: inputValue,
       from: user.uid,

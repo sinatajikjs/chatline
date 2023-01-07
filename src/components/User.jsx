@@ -11,7 +11,6 @@ const User = ({ c, selectHandler }) => {
   const id = user.uid > c.uid ? `${user.uid + c.uid}` : `${c.uid + user.uid}`;
 
   useEffect(() => {
-    console.log(c);
     onSnapshot(doc(db, "lastMsg", id), (doc) => {
       setLastMsg(doc.data());
     });
@@ -39,7 +38,7 @@ const User = ({ c, selectHandler }) => {
         <div className="relative">
           <img
             className="w-14 h-14 rounded-full cursor-pointer object-cover"
-            src={c.photoURL}
+            src={c.photoURL || "/user.jpg"}
           />
           {unreadMsgs && (
             <div className="w-3.5 h-3.5 bg-white rounded-full absolute bottom-0.5 right-0.5 flex items-center justify-center">

@@ -87,8 +87,7 @@ const NewChat = ({ chats, setModal }) => {
 
         <button
           onClick={() => setModal(false)}
-          className="mt-4 text-blue-600 underline"
-          to={"/"}
+          className="mt-4 text-red-500 underline"
         >
           Cancel
         </button>
