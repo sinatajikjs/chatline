@@ -9,7 +9,11 @@ module.exports = {
         blue: {
           950: "#17275c",
         },
+        textSecondary: "#707579",
         primary: "#3A76F0",
+      },
+      fontFamily: {
+        sans: ["Roboto"],
       },
     },
     screens: {

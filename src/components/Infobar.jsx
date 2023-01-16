@@ -5,17 +5,18 @@ import KebabMenu from "./KebabMenu";
 
 const Infobar = ({ recep }) => {
   const { user } = useAuth();
+  const { status, currentRecep, photoURL, firstName, lastName } = recep;
 
   const getUserStatus = () => {
     if (!recep) return;
-    if (recep.status === "online") return "online";
-    if (recep.status === "typing") {
-      return recep.currentRecep === user.uid ? "typing..." : "online";
+    if (status === "online") return "online";
+    if (status === "typing") {
+      return currentRecep === user.uid ? "typing..." : "online";
     }
 
     const weekday = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
-    const statDate = new Date(recep.status);
+    const statDate = new Date(status);
 
     const DayCondition = new Date().getDate() - statDate.getDate();
     const YearCondition = new Date().getFullYear() - statDate.getFullYear();
@@ -51,10 +52,10 @@ const Infobar = ({ recep }) => {
         </Link>
         <img
           className="w-14 h-14 rounded-full object-cover "
-          src={recep.photoURL || "/user.jpg"}
+          src={photoURL || "/user.jpg"}
         />
         <div className="ml-3 flex flex-col">
-          <h2 className="text-white text-2xl">{recep.fullName}</h2>
+          <h2 className="text-white text-2xl">{`${firstName} ${lastName}`}</h2>
           <p className="text-teal-300">{getUserStatus()}</p>
         </div>
       </div>

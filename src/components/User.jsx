@@ -47,7 +47,7 @@ const User = ({ c, selectHandler }) => {
           )}
         </div>
         <div className="ml-2">
-          <h2 className="text-xl">{c.fullName}</h2>
+          <h2 className="text-xl">{`${c.firstName} ${c.lastName}`}</h2>
           {lastMsg && (
             <p className="text-gray-500">{`${
               lastMsg.from === user.uid ? "You: " : ""

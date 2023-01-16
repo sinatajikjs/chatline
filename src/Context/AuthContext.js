@@ -11,6 +11,7 @@ import {
   updateDoc,
   getDoc,
   getDocs,
+  deleteField,
 } from "firebase/firestore";
 import { RecaptchaVerifier } from "firebase/auth";
 import useLocalStorage from "../Hooks/useLocalStorage";
@@ -28,18 +29,14 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
 
   async function checkUsername(username) {
-    if (user) {
-      if (user.username === username) return false;
-    }
-
     const usersRef = collection(db, "users");
-    const q = query(usersRef, where("username", "==", username));
+    const q = query(
+      usersRef,
+      where("username", "==", username),
+      where("username", "!=", user.username)
+    );
     const querySnapshot = await getDocs(q);
-    let userInfo;
-    querySnapshot.forEach((doc) => {
-      userInfo = doc.data();
-    });
-    return userInfo;
+    return querySnapshot.empty;
   }
 
   async function signIn(phoneNumber) {
@@ -69,21 +66,26 @@ export function AuthProvider({ children }) {
           uid,
           phoneNumber,
           photoURL: "",
-          fullName: "",
+          firstName: "",
+          lastName: "",
           username: "",
           bio: "",
+          status: "",
+          isNewUser: true,
           createdAt: Timestamp.fromDate(new Date()),
         });
       }
     });
   }
 
-  async function updateProfile(fullName, username, bio, imgUrl) {
+  async function updateProfile(firstName, lastName, username, bio, photoURL) {
     const usersRef = doc(db, "users", user.uid);
     await updateDoc(usersRef, {
-      fullName,
+      firstName,
+      lastName,
       username,
-      photoURL: imgUrl,
+      photoURL,
+      isNewUser: deleteField(),
       bio,
     });
     return getDoc(usersRef).then((res) => {

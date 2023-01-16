@@ -21,6 +21,17 @@ const OTPField = ({ otp, setOtp, setError, error, ...props }) => {
     if (key === "Backspace") setActiveOTPIndex(currentOTPIndex - 1);
   }
 
+  function handlePaste(e) {
+    e.preventDefault();
+    setError(false);
+    let paste = (e.clipboardData || window.clipboardData).getData("text");
+    const newOtp = [];
+    for (let i = 0; i < 6; i++) {
+      newOtp[i] = paste[i];
+      setOtp(newOtp);
+    }
+  }
+
   useEffect(() => {
     inputRef.current?.focus();
   }, [activeOTPIndex]);
@@ -31,7 +42,7 @@ const OTPField = ({ otp, setOtp, setError, error, ...props }) => {
         setOtp(new Array(6).fill(""));
         setActiveOTPIndex(0);
         currentOTPIndex = 0;
-      }, 500);
+      }, 300);
     }
   }, [error]);
 
@@ -47,6 +58,7 @@ const OTPField = ({ otp, setOtp, setError, error, ...props }) => {
               key={index}
               ref={index === activeOTPIndex ? inputRef : null}
               onChange={changeHandler}
+              onPaste={handlePaste}
               autoComplete="false"
               value={otp[index]}
               onKeyDown={(e) => keyDownHandler(e, index)}
@@ -59,8 +71,8 @@ const OTPField = ({ otp, setOtp, setError, error, ...props }) => {
         })}
       </div>
       <p
-        className={`text-red-500 mt-1 opacity-0 transition ${
-          error && "opacity-100"
+        className={`text-red-500 mt-1 transition ${
+          error ? "opacity-100" : "opacity-0"
         }`}
       >
         {error}

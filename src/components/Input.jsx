@@ -40,7 +40,7 @@ const Input = ({ recep, reply, setReply }) => {
     await setDoc(docRef, {
       text: inputValue,
       from: user.uid,
-      senderName: user.fullName,
+      senderName: user.firstName,
       to: recep.uid,
       time: messageId,
       createdAt: Timestamp.fromDate(new Date()),

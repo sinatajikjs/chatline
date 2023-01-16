@@ -1,6 +1,10 @@
-import { useRef, useState } from "react";
-import toast from "react-hot-toast";
-import { Navigate, useNavigate } from "react-router-dom";
+import { Avatar, TextField, IconButton } from "@mui/material";
+import AddAPhotoOutlinedIcon from "@mui/icons-material/AddAPhotoOutlined";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { LoadingButton } from "@mui/lab";
+import DoneIcon from "@mui/icons-material/Done";
 import { useAuth } from "../Context/AuthContext";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { storage } from "../firebase";
@@ -8,136 +12,180 @@ import { storage } from "../firebase";
 const Profile = () => {
   const { user, updateProfile, checkUsername } = useAuth();
 
-  const [img, setImg] = useState(user?.photoURL);
   const [loading, setLoading] = useState(false);
-  const [usernameValue, setUsernameValue] = useState(user?.username);
+  const [firstNameError, setFirstNameError] = useState(false);
+  const [usernameError, setUsernameError] = useState(false);
+  const [usernameStatus, setUsernameStatus] = useState("");
 
-  const nameRef = useRef();
-  const bioRef = useRef();
-  const fileRef = useRef();
+  const [firstNameValue, setFirstNameValue] = useState(user.firstName);
+  const [lastNameValue, setLastNameValue] = useState(user.lastName);
+  const [bioValue, setBioValue] = useState(user.bio);
+  const [usernameValue, setUsernameValue] = useState(user.username);
+  const [photoURL, setPhotoURL] = useState(user.photoURL);
+  const [imgFile, setImgFile] = useState(null);
 
   const navigate = useNavigate();
 
-  async function imgChangeHandler(e) {
-    const myToast = toast.loading("Uploading image...");
-    setLoading(true);
-
-    const imgValue = e.target.files[0];
-    const imgRef = ref(storage, `avatar/${user.phoneNumber}`);
-    try {
-      const snap = await uploadBytes(imgRef, imgValue);
-      const url = await getDownloadURL(ref(storage, snap.ref.fullPath));
-      setImg(url);
-      setLoading(false);
-      toast.success("Uploaded SuccessFully", { id: myToast });
-    } catch (err) {
-      toast.error("Failed to Upload", { id: myToast });
-    }
-  }
-
-  const usernameChangeHandler = (e) => {
-    let myToast;
-    toast.dismiss(myToast);
-    if (!Boolean(e.target.value.match(/^[A-Za-z0-9._ ]*$/))) {
-      return (myToast = toast.error(
-        "Only letters, numbers, periods and underscores is accepted"
-      ));
-    }
-    setUsernameValue(e.target.value.toLowerCase().replaceAll(" ", "_"));
-  };
-
-  async function submitHandler(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
-    if (usernameValue.length < 5)
-      return toast.error("Username must be more than 4 letters");
+    if (!firstNameValue) return setFirstNameError(true);
+
     setLoading(true);
-    if (user) {
-      const myToast = toast.loading("Updating...");
-
-      // update profile
-      const userExist = await checkUsername(usernameValue);
-      if (userExist) {
-        setLoading(false);
-        return toast.error("Username is Taken", { id: myToast });
-      }
-
-      updateProfile(
-        nameRef.current.value,
-        usernameValue,
-        bioRef.current.value,
-        img
-      ).then(() => {
-        setLoading(false);
-        toast.success("Updated SuccessFully", { id: myToast });
-        navigate("/");
-      });
+    let url;
+    if (imgFile) {
+      const avatarRef = ref(storage, `avatar/${user.uid}`);
+      const snap = await uploadBytes(avatarRef, imgFile);
+      url = await getDownloadURL(ref(storage, snap.ref.fullPath));
     }
+    await updateProfile(
+      firstNameValue,
+      lastNameValue,
+      usernameValue,
+      bioValue,
+      url || photoURL
+    );
+    setLoading(false);
+    navigate("/");
   }
 
-  return !user ? (
-    <Navigate to="/login" />
-  ) : (
-    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center">
+  async function handleChange({ target }) {
+    const value = target.value.toLowerCase().replaceAll(" ", "_");
+    if (!Boolean(value.match(/^[A-Za-z0-9_]*$/))) return;
+    setUsernameValue(value);
+
+    if (value === "") {
+      setUsernameStatus("");
+      return setUsernameError(false);
+    }
+
+    if (value.length < 5) {
+      return setUsernameError("Usernames must have at least 5 characters.");
+    }
+
+    setUsernameError(false);
+    setUsernameStatus("checking...");
+
+    const usernameAvailable = await checkUsername(value);
+    if (!usernameAvailable)
+      return setUsernameError("This username is already taken.");
+    setUsernameStatus("Username is available.");
+    setUsernameError(false);
+  }
+
+  return (
+    <div className="flex justify-center">
       <form
-        onSubmit={submitHandler}
-        className="flex flex-col items-center bg-white drop-shadow-xl rounded-md w-max border border-gray-300 px-8 py-5"
+        noValidate
+        onSubmit={handleSubmit}
+        className="w-[600px] mx-6 flex flex-col items-center pb-16"
       >
-        <div className="flex flex-col items-center mb-5">
-          <label htmlFor="photo">
+        {!user.isNewUser && (
+          <div className="flex self-start items-center mt-2 absolute left-0 ml-2">
+            <Link to="/">
+              <IconButton aria-label="Go back">
+                <ArrowBackIcon className="" />
+              </IconButton>
+            </Link>
+            <div>
+              <h2 className="ml-2 text-xl font-medium">Edit profile</h2>
+            </div>
+          </div>
+        )}
+        <label className="mt-14" htmlFor="avatar">
+          <Avatar className="bg-primary w-28 h-28 relative cursor-pointer">
             <img
-              className="w-24 h-24 object-cover rounded-full border-2 border-gray-400 cursor-pointer"
-              src={img || "/user.jpg"}
-              alt=""
+              className="rounded-full w-28 h-28 object-cover"
+              src={photoURL}
             />
-          </label>
-          <input
-            type="file"
-            ref={fileRef}
-            onChange={imgChangeHandler}
-            id="photo"
-            className="hidden"
-          />
-        </div>
-        <div className="flex flex-col my-1.5 w-full">
-          <label htmlFor="name">Username</label>
-          <input
-            className="border border-stone-400 rounded text-medium px-2 py-1 w-full mt-1"
-            type="text"
-            required
-            value={usernameValue}
-            onChange={usernameChangeHandler}
-            name="name"
-          />
-        </div>
-        <div className="flex flex-col my-1.5 w-full">
-          <label htmlFor="name">Fullname</label>
-          <input
-            defaultValue={user?.fullName}
-            className="border border-stone-400 rounded text-medium px-2 py-1 w-full mt-1"
-            type="text"
-            required
-            name="name"
-            ref={nameRef}
-          />
-        </div>
-        <div className="flex flex-col my-1.5 w-full">
-          <label htmlFor="name">Bio</label>
-          <input
-            defaultValue={user?.bio}
-            className="border border-stone-400 rounded text-medium px-2 py-1 w-full mt-1"
-            type="text"
-            ref={bioRef}
-          />
-        </div>
-        <button
+            {photoURL && <div className="w-28 h-28 bg-modalBg absolute" />}
+            <AddAPhotoOutlinedIcon className="text-5xl absolute hover:scale-110 transition" />
+          </Avatar>
+        </label>
+        <input
+          type="file"
+          onChange={(e) => {
+            setPhotoURL(URL.createObjectURL(e.target.files[0]));
+            setImgFile(e.target.files[0]);
+          }}
+          id="avatar"
+          className="hidden"
+        />
+        <h2 className="mt-4 text-2xl">Profile info</h2>
+        <p className="mt-2 text-textSecondary text-center">
+          Enter your name and add a profile picture
+        </p>
+        <TextField
+          value={firstNameValue}
+          onChange={(e) => {
+            setFirstNameError(false);
+            setFirstNameValue(e.target.value);
+          }}
+          type="text"
+          error={firstNameError}
+          className="mt-8"
+          required
+          fullWidth
+          label="First name (required)"
+        />
+        <TextField
+          value={lastNameValue}
+          onChange={(e) => setLastNameValue(e.target.value)}
+          type="text"
+          className="mt-4"
+          fullWidth
+          label="Last name (optional)"
+        />
+        <TextField
+          value={bioValue}
+          onChange={(e) => setBioValue(e.target.value)}
+          type="text"
+          className="mt-4"
+          fullWidth
+          label="Bio"
+          multiline
+        />
+        <p className="mt-2 text-sm max-w-xs self-start text-textSecondary">
+          Any details such as age, occupation or city. Example: 23 y.o. designer
+          from San Francisco
+        </p>
+        <h2 className="self-start font-medium text-textSecondary mt-12">
+          Username
+        </h2>
+        <TextField
+          value={usernameValue}
+          onChange={handleChange}
+          type="text"
+          error={usernameError}
+          className="mt-8"
+          fullWidth
+          label={usernameError || usernameStatus || "Username"}
+        />
+        <p className="mt-2 text-sm self-start text-textSecondary">
+          You can choose a username on <b>Chatline</b>. If you do, people will
+          be able to find you by this username and contact you without needing
+          your phone number.
+          <br />
+          <br />
+          You can use <b>a–z</b>, <b>0–9</b> and underscores. Minimum length is
+          5 characters.
+        </p>
+        {usernameValue && (
+          <p className="mt-4 text-sm self-start text-textSecondary ">
+            This link opens a chat with you:
+            <br />
+            https://chatline-app.vercel.app/{usernameValue}
+          </p>
+        )}
+        <LoadingButton
+          className="mt-8 min-w-[56px] h-14 rounded-full fixed bottom-5 right-5"
+          size="small"
+          variant="contained"
+          loading={loading}
           type="submit"
-          className={`bg-blue-500 ${
-            loading ? "opacity-50" : "opacity-100"
-          } text-white px-2 py-1 rounded text-lg mt-4 w-full`}
-          disabled={loading}
+          disabled={usernameError || usernameStatus === "checking..."}
         >
-          {user ? "Update" : "Finish"}
-        </button>
+          <DoneIcon />
+        </LoadingButton>
       </form>
     </div>
   );

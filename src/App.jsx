@@ -5,7 +5,6 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Chat from "./Pages/Chat";
 import Dashboard from "./Pages/Dashboard";
 import Profile from "./Pages/Profile";
-import { useState } from "react";
 import Signin from "./Pages/Signin";
 
 const theme = createTheme({

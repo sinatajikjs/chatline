@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { useAuth } from "../Context/AuthContext";
 import { db } from "../firebase";
@@ -13,18 +13,17 @@ import {
 } from "firebase/firestore";
 
 const NewChat = ({ chats, setModal }) => {
-  const usernameRef = useRef();
+  const [inputValue, setInputValue] = useState("");
 
   const { user } = useAuth();
 
   function submitHandler(e) {
     e.preventDefault();
-    const usernameValue = usernameRef.current.value;
-
     const myToast = toast.loading("Adding...");
 
     const usersRef = collection(db, "users");
-    const q = query(usersRef, where("username", "==", usernameValue));
+    const searchingFor = inputValue[0] === "+" ? "phoneNumber" : "username";
+    const q = query(usersRef, where(searchingFor, "==", inputValue));
     getDocs(q).then((querySnapshot) => {
       if (querySnapshot.empty) {
         return toast.error("User Does not exist", {
@@ -68,14 +67,15 @@ const NewChat = ({ chats, setModal }) => {
       >
         <h2 className="text-3xl font-semibold mb-5">New Chat</h2>
         <div>
-          <label htmlFor="text">Username</label>
+          <label htmlFor="text">Phone number or Username</label>
           <input
             className="border border-stone-400 rounded text-medium px-2 py-1 w-full mb-1 mt-1"
             type="text"
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
             autoFocus
             required
             name="text"
-            ref={usernameRef}
           />
         </div>
         <button

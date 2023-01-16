@@ -2,6 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap");
+
 .scrollbar-hiden::-webkit-scrollbar {
   display: none;
 }
@@ -18,4 +20,18 @@
 
 .otp-input[type="number"] {
   -moz-appearance: textfield;
+}
+
+/* Track */
+::-webkit-scrollbar {
+  width: 7px;
+}
+::-webkit-scrollbar-track {
+  background: #fff;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #cdcdcd;
+  border-radius: 3px;
 }
