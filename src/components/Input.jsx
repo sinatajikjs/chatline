@@ -78,11 +78,11 @@ const Input = ({ recep, reply, setReply }) => {
       });
     }
     setDoc(doc(db, "chats", user.uid, "chats", recep.uid), {
-      id: recep.uid,
+      uid: recep.uid,
       createdAt: Timestamp.fromDate(new Date()),
     }).then(() => {
       setDoc(doc(db, "chats", recep.uid, "chats", user.uid), {
-        id: user.uid,
+        uid: user.uid,
         createdAt: Timestamp.fromDate(new Date()),
       });
     });

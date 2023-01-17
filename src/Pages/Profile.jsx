@@ -1,7 +1,7 @@
 import { Avatar, TextField, IconButton } from "@mui/material";
 import AddAPhotoOutlinedIcon from "@mui/icons-material/AddAPhotoOutlined";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { LoadingButton } from "@mui/lab";
 import DoneIcon from "@mui/icons-material/Done";
@@ -17,11 +17,11 @@ const Profile = () => {
   const [usernameError, setUsernameError] = useState(false);
   const [usernameStatus, setUsernameStatus] = useState("");
 
-  const [firstNameValue, setFirstNameValue] = useState(user.firstName);
-  const [lastNameValue, setLastNameValue] = useState(user.lastName);
-  const [bioValue, setBioValue] = useState(user.bio);
-  const [usernameValue, setUsernameValue] = useState(user.username);
-  const [photoURL, setPhotoURL] = useState(user.photoURL);
+  const [firstNameValue, setFirstNameValue] = useState(user?.firstName);
+  const [lastNameValue, setLastNameValue] = useState(user?.lastName);
+  const [bioValue, setBioValue] = useState(user?.bio);
+  const [usernameValue, setUsernameValue] = useState(user?.username);
+  const [photoURL, setPhotoURL] = useState(user?.photoURL);
   const [imgFile, setImgFile] = useState(null);
 
   const navigate = useNavigate();
@@ -72,15 +72,20 @@ const Profile = () => {
     setUsernameError(false);
   }
 
-  return (
+  return !user ? (
+    <Navigate to="/login" />
+  ) : (
     <div className="flex justify-center">
       <form
+        autoComplete="false"
         noValidate
         onSubmit={handleSubmit}
-        className="w-[600px] mx-6 flex flex-col items-center pb-16"
+        className={`${
+          user.isNewUser ? "w-96" : "w-[600px]"
+        } mx-6 flex flex-col items-center pb-16`}
       >
         {!user.isNewUser && (
-          <div className="flex self-start items-center mt-2 absolute left-0 ml-2">
+          <div className="flex self-start bg-white z-20 w-screen py-2 items-center fixed left-0 ml-2">
             <Link to="/">
               <IconButton aria-label="Go back">
                 <ArrowBackIcon className="" />
@@ -135,56 +140,64 @@ const Profile = () => {
           fullWidth
           label="Last name (optional)"
         />
-        <TextField
-          value={bioValue}
-          onChange={(e) => setBioValue(e.target.value)}
-          type="text"
-          className="mt-4"
-          fullWidth
-          label="Bio"
-          multiline
-        />
-        <p className="mt-2 text-sm max-w-xs self-start text-textSecondary">
-          Any details such as age, occupation or city. Example: 23 y.o. designer
-          from San Francisco
-        </p>
-        <h2 className="self-start font-medium text-textSecondary mt-12">
-          Username
-        </h2>
-        <TextField
-          value={usernameValue}
-          onChange={handleChange}
-          type="text"
-          error={usernameError}
-          className="mt-8"
-          fullWidth
-          label={usernameError || usernameStatus || "Username"}
-        />
-        <p className="mt-2 text-sm self-start text-textSecondary">
-          You can choose a username on <b>Chatline</b>. If you do, people will
-          be able to find you by this username and contact you without needing
-          your phone number.
-          <br />
-          <br />
-          You can use <b>a–z</b>, <b>0–9</b> and underscores. Minimum length is
-          5 characters.
-        </p>
-        {usernameValue && (
-          <p className="mt-4 text-sm self-start text-textSecondary ">
-            This link opens a chat with you:
-            <br />
-            https://chatline-app.vercel.app/{usernameValue}
-          </p>
+        {!user.isNewUser && (
+          <>
+            <TextField
+              value={bioValue}
+              onChange={(e) => setBioValue(e.target.value)}
+              type="text"
+              className="mt-4"
+              fullWidth
+              label="Bio"
+              multiline
+            />
+            <p className="mt-2 text-sm max-w-xs self-start text-textSecondary">
+              Any details such as age, occupation or city. Example: 23 y.o.
+              designer from San Francisco
+            </p>
+            <h2 className="self-start font-medium text-textSecondary mt-12">
+              Username
+            </h2>
+            <TextField
+              value={usernameValue}
+              onChange={handleChange}
+              type="text"
+              error={usernameError}
+              className="mt-8"
+              fullWidth
+              label={usernameError || usernameStatus || "Username"}
+            />
+            <p className="mt-2 text-sm self-start text-textSecondary">
+              You can choose a username on <b>Chatline</b>. If you do, people
+              will be able to find you by this username and contact you without
+              needing your phone number.
+              <br />
+              <br />
+              You can use <b>a–z</b>, <b>0–9</b> and underscores. Minimum length
+              is 5 characters.
+            </p>
+            {usernameValue && (
+              <p className="mt-4 text-sm self-start text-textSecondary ">
+                This link opens a chat with you:
+                <br />
+                https://chatline-app.vercel.app/{usernameValue}
+              </p>
+            )}
+          </>
         )}
         <LoadingButton
-          className="mt-8 min-w-[56px] h-14 rounded-full fixed bottom-5 right-5"
-          size="small"
+          className={`${
+            user.isNewUser
+              ? "w-full mt-8"
+              : "min-w-[56px] h-14 rounded-full fixed bottom-5 right-5"
+          }`}
           variant="contained"
+          size={user.isNewUser ? "large" : "medium"}
           loading={loading}
           type="submit"
           disabled={usernameError || usernameStatus === "checking..."}
         >
-          <DoneIcon />
+          {user.isNewUser ? "next" : <DoneIcon />}
         </LoadingButton>
       </form>
     </div>

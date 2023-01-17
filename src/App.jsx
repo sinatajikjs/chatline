@@ -16,7 +16,6 @@ const theme = createTheme({
 });
 
 const App = () => {
-
   return (
     <ThemeProvider theme={theme}>
       <BrowserRouter>
@@ -24,11 +23,8 @@ const App = () => {
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/login" element={<Signin />} />
-            <Route path="/chat" element={<Chat />} />
-            <Route
-              path="/profile"
-              element={<Profile  />}
-            />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/:chatId" element={<Chat />} />
           </Routes>
         </AuthProvider>
       </BrowserRouter>

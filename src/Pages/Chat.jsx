@@ -1,5 +1,5 @@
-import { useEffect, useRef } from "react";
-import { Navigate } from "react-router-dom";
+import { useEffect } from "react";
+import { Navigate, useParams } from "react-router-dom";
 
 import { useAuth } from "../Context/AuthContext";
 
@@ -11,8 +11,6 @@ import {
   onSnapshot,
   orderBy,
   updateDoc,
-  doc,
-  getDocs,
 } from "firebase/firestore";
 
 import Infobar from "../components/Infobar";
@@ -23,24 +21,20 @@ import useLocalStorage from "../Hooks/useLocalStorage";
 import ImgModal from "../components/ImgModal";
 
 const Chat = () => {
-  const { user, recepId } = useAuth();
-
-  const [recep, setRecep] = useLocalStorage("recep", "");
+  const { user, recep } = useAuth();
   const [imgModal, setImgModal] = useState(false);
 
   const id =
-    user.uid > recepId
-      ? `${user.uid + recepId}`
-      : `${recepId + user.uid}`;
+    user.uid > recep.uid
+      ? `${user.uid + recep.uid}`
+      : `${recep.uid + user.uid}`;
   const [messages, setMessages] = useLocalStorage(id, []);
   const [reply, setReply] = useState(null);
   const [online, setOnline] = useState(true);
 
+  const { chatId } = useParams();
+
   useEffect(() => {
-    const usersRef = doc(db, "users", recepId);
-
-    onSnapshot(usersRef, (doc) => setRecep(doc.data()));
-
     const messagesRef = collection(db, "messages", id, "chat");
     const messagesQ = query(messagesRef, orderBy("createdAt", "asc"));
 
@@ -53,14 +47,6 @@ const Chat = () => {
     });
   }, []);
 
-  document.addEventListener(
-    "visibilitychange",
-    function () {
-      if (document.hidden) setOnline(false);
-      else setOnline(true);
-    },
-    false
-  );
   useEffect(() => {
     const messagesRef = collection(db, "messages", id, "chat");
 
@@ -85,8 +71,7 @@ const Chat = () => {
     };
   }, [online]);
 
-
-  return !user || !recepId ? (
+  return !user || !chatId ? (
     <Navigate to="/" />
   ) : (
     <div className="bg-gray-300 absolute top-0 w-screen h-full overflow-hidden ">

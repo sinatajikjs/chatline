@@ -24,7 +24,7 @@ export function useAuth() {
 let myToast;
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
-  const [recepId, setRecepId] = useLocalStorage("recepId", "");
+  const [recep, setRecep] = useLocalStorage("recep", "");
 
   const [loading, setLoading] = useState(true);
 
@@ -143,8 +143,8 @@ export function AuthProvider({ children }) {
     checkUsername,
     user,
     updateProfile,
-    recepId,
-    setRecepId,
+    recep,
+    setRecep,
     confirmOTP,
   };
 

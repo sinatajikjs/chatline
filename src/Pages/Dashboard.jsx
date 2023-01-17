@@ -12,6 +12,7 @@ import {
   orderBy,
   updateDoc,
   getDocs,
+  where,
 } from "firebase/firestore";
 import NewChat from "../components/NewChat";
 import User from "../components/User";
@@ -21,14 +22,7 @@ const Dashboard = () => {
   const [chats, setChats] = useLocalStorage("chats", []);
   const [modal, setModal] = useState(false);
 
-  const navigate = useNavigate();
-
-  const { logout, user, setRecepId } = useAuth();
-
-  function selectHandler(e) {
-    setRecepId(e.currentTarget.dataset.id);
-    navigate("/chat");
-  }
+  const { logout, user } = useAuth();
 
   function logoutHandler() {
     const userRef = doc(db, "users", user.uid);
@@ -48,16 +42,20 @@ const Dashboard = () => {
       if (querySnapshot.empty) setChats([]);
 
       const chatsArr = [];
-
       querySnapshot.forEach((chat) => {
-        const usersRef = collection(db, "users");
-        getDocs(usersRef).then((snap) => {
-          snap.forEach((user) => {
-            if (user.data().uid === chat.data().id) chatsArr.push(user.data());
-          });
-          setChats(chatsArr);
-        });
+        chatsArr.push(chat.data());
       });
+      setChats(chatsArr);
+      // querySnapshot.forEach((chat) => {
+      //   const usersRef = collection(db, "users");
+      //   const q = query(usersRef, where("uid", "==", chat.data().id));
+      //   getDocs(q).then((snap) => {
+      //     snap.forEach((user) => {
+      //       chatsArr.push(user.data());
+      //     });
+      //     setChats(chatsArr);
+      //   });
+      // });
     });
   }
 
@@ -91,8 +89,8 @@ const Dashboard = () => {
         </p>
       ) : (
         <div className="mt-5 mx-3 border-t">
-          {chats.map((c) => {
-            return <User c={c} key={c.uid} selectHandler={selectHandler} />;
+          {chats.map((chat) => {
+            return <User chat={chat} key={chat.uid} />;
           })}
         </div>
       )}
@@ -100,9 +98,7 @@ const Dashboard = () => {
       <button onClick={() => setModal(true)}>
         <AiFillPlusCircle className="text-4xl absolute right-0 bottom-0 bg-white text-teal-600 w-16 h-16 mb-4 mr-4 rounded-full cursor-pointer" />
       </button>
-      {modal && (
-        <NewChat chats={chats} setChats={setChats} setModal={setModal} />
-      )}
+      {modal && <NewChat chats={chats} setModal={setModal} />}
     </div>
   );
 };

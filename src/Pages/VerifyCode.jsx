@@ -58,12 +58,12 @@ const VerifyCode = ({ inputValue, setCodeSent }) => {
             <ModeEditOutlineOutlinedIcon className="text-gray-500 text-xl" />
           </IconButton>
         </div>
-        <p className="mt-2 text-center text-gray-500">
+        <p className="mt-4 text-center text-textSecondary">
           We've sent the code to your phone number
         </p>
         <OTPField setOtp={setOtp} otp={otp} setError={setError} error={error} />
         <LoadingButton
-          className="mt-6"
+          className="mt-10"
           size="large"
           disabled
           variant="contained"

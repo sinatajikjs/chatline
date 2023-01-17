@@ -67,7 +67,7 @@ const Signin = () => {
       <Navigate to="/" />
     ) : (
       <div className="flex justify-center">
-        <div className="w-80 mx-6 mt-16 flex flex-col items-center">
+        <div className="w-96 mx-6 mt-16 flex flex-col items-center">
           <img className="w-40" src="/logo.svg" />
           <h1 className="mt-10 text-4xl font-semibold">Chatline</h1>
           <p className="mt-4 text-center">

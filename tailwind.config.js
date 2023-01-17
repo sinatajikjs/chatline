@@ -17,7 +17,7 @@ module.exports = {
       },
     },
     screens: {
-      mobile: { max: "360px" },
+      tablet: { min: "600px" },
     },
   },
   plugins: [],

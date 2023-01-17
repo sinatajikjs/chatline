@@ -1,16 +1,25 @@
 import { collection, doc, onSnapshot, query, where } from "firebase/firestore";
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { useAuth } from "../Context/AuthContext";
 import { db } from "../firebase";
 
-const User = ({ c, selectHandler }) => {
+const User = ({ chat }) => {
   const [lastMsg, setLastMsg] = useState(null);
+  const [chatData, setChatData] = useState({});
   const [unreadMsgs, setUnreadMsgs] = useState("");
-  const { user } = useAuth();
+  const { user, setRecep } = useAuth();
 
-  const id = user.uid > c.uid ? `${user.uid + c.uid}` : `${c.uid + user.uid}`;
+  const id =
+    user.uid > chat.uid ? `${user.uid + chat.uid}` : `${chat.uid + user.uid}`;
 
   useEffect(() => {
+    const usersRef = doc(db, "users", chat.uid);
+
+    onSnapshot(usersRef, (doc) => {
+      setChatData(doc.data());
+    });
+
     onSnapshot(doc(db, "lastMsg", id), (doc) => {
       setLastMsg(doc.data());
     });
@@ -28,9 +37,9 @@ const User = ({ c, selectHandler }) => {
   }, []);
 
   return (
-    <div
-      onClick={selectHandler}
-      data-id={c.uid}
+    <Link
+      onClick={() => setRecep(chatData)}
+      to={`/${chatData.username || chatData.phoneNumber}`}
       className="flex items-center 
       w-full py-3 border-b cursor-pointer justify-between"
     >
@@ -38,16 +47,16 @@ const User = ({ c, selectHandler }) => {
         <div className="relative">
           <img
             className="w-14 h-14 rounded-full cursor-pointer object-cover"
-            src={c.photoURL || "/user.jpg"}
+            src={chatData.photoURL || "/user.jpg"}
           />
-          {unreadMsgs && (
+          {chatData.status === "online" && (
             <div className="w-3.5 h-3.5 bg-white rounded-full absolute bottom-0.5 right-0.5 flex items-center justify-center">
               <div className="w-2.5 h-2.5 bg-violet-600 rounded-full"></div>
             </div>
           )}
         </div>
         <div className="ml-2">
-          <h2 className="text-xl">{`${c.firstName} ${c.lastName}`}</h2>
+          <h2 className="text-xl">{`${chatData.firstName} ${chatData.lastName}`}</h2>
           {lastMsg && (
             <p className="text-gray-500">{`${
               lastMsg.from === user.uid ? "You: " : ""
@@ -62,7 +71,7 @@ const User = ({ c, selectHandler }) => {
           <p className="text-white">{unreadMsgs}</p>
         </div>
       )}
-    </div>
+    </Link>
   );
 };
 
