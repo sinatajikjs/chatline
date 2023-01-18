@@ -65,8 +65,8 @@ const Profile = () => {
     setUsernameError(false);
     setUsernameStatus("checking...");
 
-    const usernameAvailable = await checkUsername(value);
-    if (!usernameAvailable)
+    const isUsernameAvailable = await checkUsername(value);
+    if (!isUsernameAvailable)
       return setUsernameError("This username is already taken.");
     setUsernameStatus("Username is available.");
     setUsernameError(false);

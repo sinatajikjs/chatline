@@ -11,8 +11,6 @@ import {
   doc,
   orderBy,
   updateDoc,
-  getDocs,
-  where,
 } from "firebase/firestore";
 import NewChat from "../components/NewChat";
 import User from "../components/User";
@@ -46,16 +44,6 @@ const Dashboard = () => {
         chatsArr.push(chat.data());
       });
       setChats(chatsArr);
-      // querySnapshot.forEach((chat) => {
-      //   const usersRef = collection(db, "users");
-      //   const q = query(usersRef, where("uid", "==", chat.data().id));
-      //   getDocs(q).then((snap) => {
-      //     snap.forEach((user) => {
-      //       chatsArr.push(user.data());
-      //     });
-      //     setChats(chatsArr);
-      //   });
-      // });
     });
   }
 

@@ -8,10 +8,10 @@ import { ImAttachment, ImCross } from "react-icons/im";
 import { db, storage } from "../firebase";
 import { useAuth } from "../Context/AuthContext";
 
-const Input = ({ recep, reply, setReply }) => {
+const Input = ({  reply, setReply }) => {
   const [img, setImg] = useState(null);
   const [imgUrl, setImgUrl] = useState(null);
-  const { user, recepId } = useAuth();
+  const { user, recep } = useAuth();
 
   const fileRef = useRef();
 

@@ -5,8 +5,8 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../Context/AuthContext";
 import { db } from "../firebase";
 
-const KebabMenu = ({ recep }) => {
-  const { user } = useAuth();
+const KebabMenu = () => {
+  const { user, recep } = useAuth();
 
   const [menu, setMenu] = useState(false);
 

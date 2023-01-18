@@ -3,8 +3,8 @@ import { Link } from "react-router-dom";
 import { useAuth } from "../Context/AuthContext";
 import KebabMenu from "./KebabMenu";
 
-const Infobar = ({ recep }) => {
-  const { user } = useAuth();
+const Infobar = () => {
+  const { user, recep } = useAuth();
   const { status, currentRecep, photoURL, firstName, lastName } = recep;
 
   const getUserStatus = () => {
@@ -59,7 +59,7 @@ const Infobar = ({ recep }) => {
           <p className="text-teal-300">{getUserStatus()}</p>
         </div>
       </div>
-      <KebabMenu recep={recep} />
+      <KebabMenu />
     </section>
   );
 };

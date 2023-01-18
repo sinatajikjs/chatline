@@ -21,20 +21,34 @@ import useLocalStorage from "../Hooks/useLocalStorage";
 import ImgModal from "../components/ImgModal";
 
 const Chat = () => {
-  const { user, recep } = useAuth();
+  const { user, recep, setRecep } = useAuth();
   const [imgModal, setImgModal] = useState(false);
 
   const id =
-    user.uid > recep.uid
-      ? `${user.uid + recep.uid}`
-      : `${recep.uid + user.uid}`;
+    user?.uid > recep.uid
+      ? `${user?.uid + recep.uid}`
+      : `${recep.uid + user?.uid}`;
+
   const [messages, setMessages] = useLocalStorage(id, []);
   const [reply, setReply] = useState(null);
-  const [online, setOnline] = useState(true);
 
   const { chatId } = useParams();
 
   useEffect(() => {
+    if (!user) return;
+
+    if (!recep) {
+      const usersRef = collection(db, "users");
+      const searchingFor = chatId[0] === "+" ? "phoneNumber" : "username";
+      const q = query(usersRef, where(searchingFor, "==", chatId));
+
+      onSnapshot(q, (querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+          setRecep(doc.data());
+        });
+      });
+    }
+
     const messagesRef = collection(db, "messages", id, "chat");
     const messagesQ = query(messagesRef, orderBy("createdAt", "asc"));
 
@@ -45,10 +59,6 @@ const Chat = () => {
       });
       setMessages(messages);
     });
-  }, []);
-
-  useEffect(() => {
-    const messagesRef = collection(db, "messages", id, "chat");
 
     const receivedMessages = query(
       messagesRef,
@@ -58,24 +68,23 @@ const Chat = () => {
 
     const unsubscribe = onSnapshot(receivedMessages, (querySnapshot) => {
       querySnapshot.forEach((doc) => {
-        if (online) {
-          updateDoc(doc.ref, {
-            seen: "seen",
-          });
-        }
+        updateDoc(doc.ref, {
+          seen: "seen",
+        });
       });
     });
+
     return () => {
       unsubscribe();
       localStorage.removeItem("messanger-recep");
     };
-  }, [online]);
+  }, []);
 
-  return !user || !chatId ? (
+  return !user ? (
     <Navigate to="/" />
   ) : (
     <div className="bg-gray-300 absolute top-0 w-screen h-full overflow-hidden ">
-      <Infobar recep={recep} />
+      <Infobar />
       {imgModal && <ImgModal setImgModal={setImgModal} src={imgModal} />}
       <Messages
         setReply={setReply}
@@ -83,13 +92,7 @@ const Chat = () => {
         setImgModal={setImgModal}
         messages={messages}
       />
-      <Input
-        setMessages={setMessages}
-        messages={messages}
-        recep={recep}
-        setReply={setReply}
-        reply={reply}
-      />
+      <Input setReply={setReply} reply={reply} />
     </div>
   );
 };
