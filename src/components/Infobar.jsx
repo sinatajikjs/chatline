@@ -45,7 +45,7 @@ const Infobar = () => {
   };
 
   return (
-    <section className="flex items-center justify-between bg-teal-600 py-2 fixed w-screen top-0 z-10 px-2">
+    <section className="flex items-center justify-between bg-teal-600 py-2 absolute w-full top-0 z-10 px-2">
       <div className="flex items-center">
         <Link to="/">
           <BsArrowLeftShort className="text-4xl cursor-pointer text-white mr-1" />

@@ -24,7 +24,7 @@ const App = () => {
             <Route path="/" element={<Dashboard />} />
             <Route path="/login" element={<Signin />} />
             <Route path="/profile" element={<Profile />} />
-            <Route path="/:chatId" element={<Chat />} />
+            <Route path="/:chatId" element={<Dashboard />} />
           </Routes>
         </AuthProvider>
       </BrowserRouter>

@@ -25,6 +25,9 @@ let myToast;
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [recep, setRecep] = useLocalStorage("recep", "");
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+
+  const [isOnline, setIsOnline] = useState(false);
 
   const [loading, setLoading] = useState(true);
 
@@ -94,27 +97,31 @@ export function AuthProvider({ children }) {
   }
 
   function logout() {
+    setIsOnline(false);
+    localStorage.removeItem("messanger-chats");
     return auth.signOut();
   }
 
-  if (user) {
-    const userRef = doc(db, "users", user.uid);
-    window.addEventListener("beforeunload", function (e) {
-      updateDoc(userRef, {
-        status: Date.now(),
-      });
-    });
+  window.addEventListener("beforeunload", function (e) {
+    setIsOnline(false);
+  });
 
-    document.addEventListener(
-      "visibilitychange",
-      function () {
-        updateDoc(userRef, {
-          status: document.hidden ? Date.now() : "online",
-        });
-      },
-      false
-    );
-  }
+  document.addEventListener(
+    "visibilitychange",
+    function () {
+      setIsOnline(!document.hidden);
+    },
+    false
+  );
+
+  useEffect(() => {
+    if (!user) return;
+    const userRef = doc(db, "users", user.uid);
+
+    updateDoc(userRef, {
+      status: isOnline ? "online" : Date.now(),
+    });
+  }, [isOnline]);
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
@@ -129,10 +136,7 @@ export function AuthProvider({ children }) {
         setUser(res.data());
       });
 
-      const userRef = doc(db, "users", user.uid);
-      updateDoc(userRef, {
-        status: "online",
-      });
+      setIsOnline(true);
     });
     return unsubscribe;
   }, []);
@@ -140,12 +144,15 @@ export function AuthProvider({ children }) {
   const value = {
     signIn,
     logout,
+    isOnline,
     checkUsername,
     user,
     updateProfile,
     recep,
     setRecep,
     confirmOTP,
+    isProfileOpen,
+    setIsProfileOpen,
   };
 
   return (

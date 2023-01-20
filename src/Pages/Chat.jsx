@@ -18,72 +18,96 @@ import Messages from "../components/Messages";
 import Input from "../components/Input";
 import { useState } from "react";
 import useLocalStorage from "../Hooks/useLocalStorage";
+import useStorage from "../Hooks/useStorage";
 import ImgModal from "../components/ImgModal";
 
 const Chat = () => {
-  const { user, recep, setRecep } = useAuth();
+  const { user, recep, setRecep, isOnline } = useAuth();
   const [imgModal, setImgModal] = useState(false);
 
-  const id =
+  const messagesId =
     user?.uid > recep.uid
       ? `${user?.uid + recep.uid}`
       : `${recep.uid + user?.uid}`;
 
-  const [messages, setMessages] = useLocalStorage(id, []);
+  const [messages, setMessages] = useLocalStorage(messagesId, []);
   const [reply, setReply] = useState(null);
+
+  const { getStorage, deleteStorage } = useStorage();
 
   const { chatId } = useParams();
 
-  useEffect(() => {
-    if (!user) return;
-
-    if (!recep) {
-      const usersRef = collection(db, "users");
-      const searchingFor = chatId[0] === "+" ? "phoneNumber" : "username";
-      const q = query(usersRef, where(searchingFor, "==", chatId));
-
-      onSnapshot(q, (querySnapshot) => {
-        querySnapshot.forEach((doc) => {
-          setRecep(doc.data());
-        });
-      });
-    }
-
-    const messagesRef = collection(db, "messages", id, "chat");
+  function getMessages() {
+    const messagesRef = collection(db, "messages", messagesId, "chat");
     const messagesQ = query(messagesRef, orderBy("createdAt", "asc"));
 
-    onSnapshot(messagesQ, (querySnapshot) => {
+    const onsub = onSnapshot(messagesQ, (querySnapshot) => {
       let messages = [];
       querySnapshot.forEach((doc) => {
         messages.push(doc.data());
       });
       setMessages(messages);
     });
+    return onsub;
+  }
+
+  useEffect(() => {
+    if (!user) return;
+
+    setMessages(getStorage(messagesId) !== null ? getStorage(messagesId) : []);
+
+    let onsub1 = () => {};
+    let onsub2 = () => {};
+
+    if (!recep) {
+      const usersRef = collection(db, "users");
+      const searchingFor = chatId[0] === "+" ? "phoneNumber" : "username";
+      const q = query(usersRef, where(searchingFor, "==", chatId));
+
+      onsub1 = onSnapshot(q, (querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+          setRecep(doc.data());
+          onsub2 = getMessages();
+        });
+      });
+    } else {
+      onsub2 = getMessages();
+    }
+
+    return () => {
+      onsub1();
+      onsub2();
+      deleteStorage("recep");
+    };
+  }, [chatId, messagesId]);
+
+  useEffect(() => {
+    const messagesRef = collection(db, "messages", messagesId, "chat");
 
     const receivedMessages = query(
       messagesRef,
       where("seen", "==", "sent"),
       where("to", "==", user.uid)
     );
-
-    const unsubscribe = onSnapshot(receivedMessages, (querySnapshot) => {
+    const onsub3 = onSnapshot(receivedMessages, (querySnapshot) => {
       querySnapshot.forEach((doc) => {
-        updateDoc(doc.ref, {
-          seen: "seen",
-        });
+        if (isOnline) {
+          updateDoc(doc.ref, {
+            seen: "seen",
+          });
+        }
       });
     });
 
-    return () => {
-      unsubscribe();
-      localStorage.removeItem("messanger-recep");
-    };
-  }, []);
+    return () => onsub3();
+  }, [chatId, isOnline, messagesId]);
 
   return !user ? (
-    <Navigate to="/" />
+    <Navigate to="/login" />
   ) : (
-    <div className="bg-gray-300 absolute top-0 w-screen h-full overflow-hidden ">
+    <div
+      className={`tablet:w-[calc(100%-24rem)] tablet:left-96 left-0  bg-gray-300 absolute top-0 w-screen h-full overflow-hidden`}
+    >
       <Infobar />
       {imgModal && <ImgModal setImgModal={setImgModal} src={imgModal} />}
       <Messages

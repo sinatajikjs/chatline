@@ -4,13 +4,13 @@ import { getFirestore } from "firebase/firestore";
 import "firebase/compat/auth";
 
 const app = firebase.initializeApp({
-  apiKey: "AIzaSyApQnVX0INnEHVWG1J6A9I2FN1fi3k10Ig",
-  authDomain: "authpractice-dev.firebaseapp.com",
-  databaseURL: "https://authpractice-dev.firebaseio.com",
-  projectId: "authpractice-dev",
-  storageBucket: "authpractice-dev.appspot.com",
-  messagingSenderId: "804276720826",
-  appId: "1:804276720826:web:bcaf40cc006e3a42b71e83",
+  apiKey: "AIzaSyDC_NyQhQn0ZhPYWclqYObstmMOHf-FYAU",
+  authDomain: "messanger-eefed.firebaseapp.com",
+  projectId: "messanger-eefed",
+  storageBucket: "messanger-eefed.appspot.com",
+  messagingSenderId: "948608976444",
+  appId: "1:948608976444:web:6f246185549c67780be539",
+  databaseURL: "https://messanger-eefed.firebaseio.com",
 });
 
 export const auth = app.auth();

@@ -58,12 +58,12 @@ const NewChat = ({ chats, setModal }) => {
     <>
       <div
         onClick={() => setModal(false)}
-        className="w-screen h-screen bg-modalBg z-10 absolute left-0 top-0"
+        className="w-screen h-screen bg-modalBg z-40 absolute left-0 top-0"
       ></div>
 
       <form
         onSubmit={submitHandler}
-        className="absolute z-20 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center bg-white drop-shadow-xl py-4 px-8 rounded-md w-80 border border-gray-300"
+        className="absolute z-50 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center bg-white drop-shadow-xl py-4 px-8 rounded-md w-80 border border-gray-300"
       >
         <h2 className="text-3xl font-semibold mb-5">New Chat</h2>
         <div>

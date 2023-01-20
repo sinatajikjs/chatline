@@ -2,8 +2,12 @@ import { Autocomplete, TextField, Box, Select } from "@mui/material";
 import { useEffect, useState } from "react";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
-
-const MuiCountrySelect = ({ inputValue, setInputValue,countries, ...props }) => {
+const MuiCountrySelect = ({
+  inputValue,
+  setInputValue,
+  countries,
+  ...props
+}) => {
   const [country, setCountry] = useState("");
 
   function finder(value) {
@@ -20,8 +24,6 @@ const MuiCountrySelect = ({ inputValue, setInputValue,countries, ...props }) => 
   useEffect(() => {
     setCountry(finder(inputValue));
   }, [inputValue]);
-
-  
 
   const handleChange = (e, newValue) => {
     setCountry(newValue);
@@ -62,4 +64,3 @@ const MuiCountrySelect = ({ inputValue, setInputValue,countries, ...props }) => 
 };
 
 export default MuiCountrySelect;
-

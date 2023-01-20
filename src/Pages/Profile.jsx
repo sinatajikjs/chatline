@@ -10,7 +10,7 @@ import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { storage } from "../firebase";
 
 const Profile = () => {
-  const { user, updateProfile, checkUsername } = useAuth();
+  const { user, updateProfile, checkUsername, setIsProfileOpen } = useAuth();
 
   const [loading, setLoading] = useState(false);
   const [firstNameError, setFirstNameError] = useState(false);
@@ -45,7 +45,7 @@ const Profile = () => {
       url || photoURL
     );
     setLoading(false);
-    navigate("/");
+    setIsProfileOpen(false);
   }
 
   async function handleChange({ target }) {
@@ -75,22 +75,22 @@ const Profile = () => {
   return !user ? (
     <Navigate to="/login" />
   ) : (
-    <div className="flex justify-center">
+    <div className="flex justify-center h-screen tablet:w-96 w-[800px] tablet:overflow-scroll">
       <form
         autoComplete="false"
         noValidate
         onSubmit={handleSubmit}
         className={`${
-          user.isNewUser ? "w-96" : "w-[600px]"
+          user.isNewUser ? "w-96" : "w-full"
         } mx-6 flex flex-col items-center pb-16`}
       >
         {!user.isNewUser && (
-          <div className="flex self-start bg-white z-20 w-screen py-2 items-center fixed left-0 ml-2">
-            <Link to="/">
+          <div className="flex self-start bg-white z-20 py-2 items-center fixed left-0 pl-2 tablet:w-96 w-full">
+            <div onClick={() => setIsProfileOpen(false)}>
               <IconButton aria-label="Go back">
                 <ArrowBackIcon className="" />
               </IconButton>
-            </Link>
+            </div>
             <div>
               <h2 className="ml-2 text-xl font-medium">Edit profile</h2>
             </div>
@@ -189,7 +189,7 @@ const Profile = () => {
           className={`${
             user.isNewUser
               ? "w-full mt-8"
-              : "min-w-[56px] h-14 rounded-full fixed bottom-5 right-5"
+              : "min-w-[56px] h-14 rounded-full fixed bottom-5 right-5 z-30 tablet:left-[19rem] tablet:right-auto"
           }`}
           variant="contained"
           size={user.isNewUser ? "large" : "medium"}

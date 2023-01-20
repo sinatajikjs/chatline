@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useEffect } from "react";
 import { useRef } from "react";
 import Message from "./Message";
+import { useParams } from "react-router-dom";
 
 const Messages = ({ messages, reply, setReply, setImgModal }) => {
   const [touched, setTouched] = useState(0);
@@ -13,6 +14,8 @@ const Messages = ({ messages, reply, setReply, setImgModal }) => {
 
   const msgRef = useRef();
   const messagesRef = useRef();
+
+  const { chatId } = useParams();
 
   function touchMoveHandler(e) {
     const horzMoved = Math.round(e.touches[0].clientX) - touched.x;
@@ -86,6 +89,10 @@ const Messages = ({ messages, reply, setReply, setImgModal }) => {
     setFirstLoad(firstLoad + 1);
     scrollToBottom(firstLoad > 1 ? "smooth" : "auto");
   }, [messages]);
+
+  useEffect(() => {
+    setFirstLoad(0);
+  }, [chatId]);
 
   useEffect(() => {
     const resizeObserver = new ResizeObserver(() => {

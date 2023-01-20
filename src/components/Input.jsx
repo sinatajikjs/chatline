@@ -8,12 +8,22 @@ import { ImAttachment, ImCross } from "react-icons/im";
 import { db, storage } from "../firebase";
 import { useAuth } from "../Context/AuthContext";
 
-const Input = ({  reply, setReply }) => {
+const Input = ({ reply, setReply }) => {
   const [img, setImg] = useState(null);
   const [imgUrl, setImgUrl] = useState(null);
   const { user, recep } = useAuth();
 
   const fileRef = useRef();
+
+  function updateStatus(isTyping) {
+    if (!recep) return;
+
+    const userRef = doc(db, "users", user.uid);
+    updateDoc(userRef, {
+      status: isTyping ? "typing" : "online",
+      currentRecep: recep.uid,
+    });
+  }
 
   async function submitHandler(e) {
     e && e.preventDefault();
@@ -23,6 +33,7 @@ const Input = ({  reply, setReply }) => {
 
     setImgUrl(null);
     setReply(null);
+    updateStatus(false);
 
     let inputValue;
 
@@ -93,17 +104,15 @@ const Input = ({  reply, setReply }) => {
     setImgUrl(URL.createObjectURL(e.target.files[0]));
   };
 
+  let myTimeOut;
   const textChangeHandler = () => {
-    const userRef = doc(db, "users", user.uid);
-    updateDoc(userRef, {
-      status: "typing",
-      currentRecep: recep.uid,
-    });
-    setTimeout(() => {
-      updateDoc(userRef, {
-        status: "online",
-      });
-    }, 1000);
+    updateStatus(true);
+    while (myTimeOut > -1) {
+      clearTimeout(myTimeOut--);
+    }
+    myTimeOut = setTimeout(() => {
+      updateStatus(false);
+    }, 5000);
   };
 
   function touchEndHandler(e) {
@@ -121,7 +130,7 @@ const Input = ({  reply, setReply }) => {
   return (
     <form
       onSubmit={submitHandler}
-      className="fixed bottom-0 pb-3 z-20 flex items-center justify-center w-screen px-4 mt-5 bg-gray-300"
+      className="absolute bottom-0 pb-3 z-20 flex items-center justify-center w-full px-4 mt-5 bg-gray-300"
     >
       {imgUrl ? (
         <>
