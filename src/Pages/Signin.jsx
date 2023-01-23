@@ -4,7 +4,7 @@ import { LoadingButton } from "@mui/lab";
 import { TextField } from "@mui/material";
 import { useAuth } from "../Context/AuthContext";
 import VerifyCode from "./VerifyCode";
-import { Navigate } from "react-router-dom";
+import { Navigate, useParams } from "react-router-dom";
 import axios from "axios";
 
 const Signin = () => {
@@ -45,7 +45,7 @@ const Signin = () => {
   const handleChange = ({ target }) => {
     setError(false);
     const { value } = target;
-    if (!Boolean(value.match("^[0-9+]*$"))) return;
+    if (!Boolean(value.match("^[0-9+ ]*$"))) return;
 
     if (value[0] !== "+" && value !== "") return setInputValue("+" + value);
     setInputValue(value);

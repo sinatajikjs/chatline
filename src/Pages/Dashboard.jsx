@@ -1,14 +1,13 @@
 import { useEffect, useState } from "react";
 import { HiOutlineLogout } from "react-icons/hi";
 import { AiFillPlusCircle } from "react-icons/ai";
-import { Navigate, Link, useNavigate, useParams } from "react-router-dom";
+import { Navigate, useParams, Outlet } from "react-router-dom";
 import { useAuth } from "../Context/AuthContext";
 import { db } from "../firebase";
 import { collection, query, onSnapshot, orderBy } from "firebase/firestore";
 import NewChat from "../components/NewChat";
 import User from "../components/User";
 import useLocalStorage from "../Hooks/useLocalStorage";
-import Chat from "./Chat";
 import Profile from "./Profile";
 
 const Dashboard = () => {
@@ -20,7 +19,8 @@ const Dashboard = () => {
   const { chatId } = useParams();
 
   useEffect(() => {
-    const chatsRef = collection(db, "chats", user?.uid, "chats");
+    if (!user) return;
+    const chatsRef = collection(db, "chats", user.uid, "chats");
     const q = query(chatsRef, orderBy("createdAt", "desc"));
 
     const onsub = onSnapshot(q, (querySnapshot) => {
@@ -35,7 +35,7 @@ const Dashboard = () => {
   }, []);
 
   return !user ? (
-    <Navigate to="/login" />
+    <Navigate to={`/login${chatId ? "?redirect=" + chatId : ""}`} />
   ) : (
     <div className="flex">
       {isProfileOpen ? (
@@ -81,11 +81,8 @@ const Dashboard = () => {
           {modal && <NewChat chats={chats} setModal={setModal} />}
         </div>
       )}
-      {chatId ? (
-        <Chat />
-      ) : (
-        <div className="hidden tablet:block bg-gray-300 tablet:w-[calc(100%-24rem)] h-screen"></div>
-      )}
+      <Outlet />
+      <div className="hidden tablet:block bg-gray-300 tablet:w-[calc(100%-24rem)] h-screen" />
     </div>
   );
 };

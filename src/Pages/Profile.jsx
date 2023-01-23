@@ -1,7 +1,7 @@
 import { Avatar, TextField, IconButton } from "@mui/material";
 import AddAPhotoOutlinedIcon from "@mui/icons-material/AddAPhotoOutlined";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import { Link, Navigate, useNavigate } from "react-router-dom";
+import { Link, Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import { useState } from "react";
 import { LoadingButton } from "@mui/lab";
 import DoneIcon from "@mui/icons-material/Done";
@@ -26,6 +26,9 @@ const Profile = () => {
 
   const navigate = useNavigate();
 
+  const [searchParams] = useSearchParams();
+  const someQueryParam = searchParams.get("redirect")?.replace(" ", "+");
+
   async function handleSubmit(e) {
     e.preventDefault();
     if (!firstNameValue) return setFirstNameError(true);
@@ -45,6 +48,9 @@ const Profile = () => {
       url || photoURL
     );
     setLoading(false);
+
+    navigate("/" + (someQueryParam || ""));
+
     setIsProfileOpen(false);
   }
 
@@ -75,7 +81,11 @@ const Profile = () => {
   return !user ? (
     <Navigate to="/login" />
   ) : (
-    <div className="flex justify-center h-screen tablet:w-96 w-[800px] tablet:overflow-scroll">
+    <div
+      className={`${
+        !user.isNewUser ? "tablet:w-96" : ""
+      } flex justify-center h-screen tablet:overflow-scroll`}
+    >
       <form
         autoComplete="false"
         noValidate

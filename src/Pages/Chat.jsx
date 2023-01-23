@@ -106,7 +106,7 @@ const Chat = () => {
     <Navigate to="/login" />
   ) : (
     <div
-      className={`tablet:w-[calc(100%-24rem)] tablet:left-96 left-0  bg-gray-300 absolute top-0 w-screen h-full overflow-hidden`}
+      className={`tablet:w-[calc(100%-24rem)] tablet:left-96 left-0 bg-gray-300 absolute z-40 top-0 w-screen h-full overflow-hidden`}
     >
       <Infobar />
       {imgModal && <ImgModal setImgModal={setImgModal} src={imgModal} />}

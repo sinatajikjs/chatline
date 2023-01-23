@@ -3,7 +3,7 @@ import ModeEditOutlineOutlinedIcon from "@mui/icons-material/ModeEditOutlineOutl
 import { IconButton } from "@mui/material";
 import { useState, useEffect } from "react";
 import { useAuth } from "../Context/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { LoadingButton } from "@mui/lab";
 import { collection, doc, getDocs, query, where } from "firebase/firestore";
 import { db } from "../firebase";
@@ -14,13 +14,24 @@ const VerifyCode = ({ inputValue, setCodeSent }) => {
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  const [searchParams] = useSearchParams();
+  const someQueryParam = searchParams.get("redirect")?.replace(" ", "+");
+
   const { confirmOTP, user } = useAuth();
 
   useEffect(() => {
+    console.log(someQueryParam);
+    console.log("/" + someQueryParam);
     const usersRef = collection(db, "users");
     const q = query(usersRef, where("phoneNumber", "==", inputValue));
     getDocs(q).then((querySnapshot) => {
-      if (querySnapshot.empty) setPath("/profile");
+      if (querySnapshot.empty)
+        setPath(
+          "/profile" + (someQueryParam ? "?redirect=" + someQueryParam : "")
+        );
+      else if (someQueryParam) {
+        setPath("/" + someQueryParam);
+      }
     });
   }, []);
 
@@ -45,6 +56,7 @@ const VerifyCode = ({ inputValue, setCodeSent }) => {
   }, [otp]);
 
   useEffect(() => {
+    console.log(path);
     if (user) navigate(path);
   }, [user]);
 
