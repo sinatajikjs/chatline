@@ -1,11 +1,12 @@
+import { useEffect } from "react";
 import { BsArrowLeftShort } from "react-icons/bs";
 import { Link } from "react-router-dom";
 import { useAuth } from "../Context/AuthContext";
 import KebabMenu from "./KebabMenu";
 
-const Infobar = () => {
-  const { user, recep } = useAuth();
-  const { status, currentRecep, photoURL, firstName, lastName } = recep;
+const Infobar = ({ recep }) => {
+  const { user } = useAuth();
+  const { status, currentRecep, photoURL, firstName, lastName } = recep || [];
 
   const getUserStatus = () => {
     if (!recep) return;
@@ -59,7 +60,7 @@ const Infobar = () => {
           <p className="text-teal-300">{getUserStatus()}</p>
         </div>
       </div>
-      <KebabMenu />
+      <KebabMenu recep={recep} />
     </section>
   );
 };

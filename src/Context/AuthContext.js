@@ -14,7 +14,6 @@ import {
   deleteField,
 } from "firebase/firestore";
 import { RecaptchaVerifier } from "firebase/auth";
-import useLocalStorage from "../Hooks/useLocalStorage";
 
 const AuthContext = React.createContext();
 
@@ -24,7 +23,6 @@ export function useAuth() {
 let myToast;
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
-  const [recep, setRecep] = useLocalStorage("recep", "");
   const [isProfileOpen, setIsProfileOpen] = useState(false);
 
   const [isOnline, setIsOnline] = useState(false);
@@ -148,8 +146,6 @@ export function AuthProvider({ children }) {
     checkUsername,
     user,
     updateProfile,
-    recep,
-    setRecep,
     confirmOTP,
     isProfileOpen,
     setIsProfileOpen,

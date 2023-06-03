@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Navigate, useParams } from "react-router-dom";
+import { Navigate, useLocation, useParams } from "react-router-dom";
 
 import { useAuth } from "../Context/AuthContext";
 
@@ -22,13 +22,18 @@ import useStorage from "../Hooks/useStorage";
 import ImgModal from "../components/ImgModal";
 
 const Chat = () => {
-  const { user, recep, setRecep, isOnline } = useAuth();
+  const { user, isOnline } = useAuth();
   const [imgModal, setImgModal] = useState(false);
 
+  const location = useLocation();
+  const chatData = location.state?.chatData;
+
+  const [recep, setRecep] = useState(chatData);
+
   const messagesId =
-    user?.uid > recep.uid
-      ? `${user?.uid + recep.uid}`
-      : `${recep.uid + user?.uid}`;
+    user?.uid > recep?.uid
+      ? `${user?.uid + recep?.uid}`
+      : `${recep?.uid + user?.uid}`;
 
   const [messages, setMessages] = useLocalStorage(messagesId, []);
   const [reply, setReply] = useState(null);
@@ -108,7 +113,7 @@ const Chat = () => {
     <div
       className={`tablet:w-[calc(100%-24rem)] tablet:left-96 left-0 bg-gray-300 absolute z-40 top-0 w-screen h-full overflow-hidden`}
     >
-      <Infobar />
+      <Infobar recep={recep} />
       {imgModal && <ImgModal setImgModal={setImgModal} src={imgModal} />}
       <Messages
         setReply={setReply}
@@ -116,7 +121,7 @@ const Chat = () => {
         setImgModal={setImgModal}
         messages={messages}
       />
-      <Input setReply={setReply} reply={reply} />
+      <Input setReply={setReply} reply={reply} recep={recep} />
     </div>
   );
 };

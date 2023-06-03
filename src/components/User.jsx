@@ -1,12 +1,14 @@
 import { collection, doc, onSnapshot, query, where } from "firebase/firestore";
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { useAuth } from "../Context/AuthContext";
 import { db } from "../firebase";
 import useLocalStorage from "../Hooks/useLocalStorage";
 
 const User = ({ chat }) => {
-  const { user, recep, setRecep } = useAuth();
+  const { user } = useAuth();
+
+  const [recep, setRecep] = useState(null);
 
   const [lastMsg, setLastMsg] = useLocalStorage(
     `${user.uid}-lastmsgs-${chat.uid}`,
@@ -26,11 +28,11 @@ const User = ({ chat }) => {
 
     const onsub1 = onSnapshot(usersRef, (doc) => {
       setChatData(doc.data());
-      if (recep && recep.uid === doc.data().uid) setRecep(doc.data());
+      if (recep?.uid === doc.data().uid) setRecep(doc.data());
     });
 
     const onsub2 = onSnapshot(doc(db, "lastMsg", id), (doc) => {
-      setLastMsg(doc.data());
+      if (doc.data()) setLastMsg(doc.data());
     });
 
     const messagesRef = collection(db, "messages", id, "chat");
@@ -51,11 +53,14 @@ const User = ({ chat }) => {
   }, []);
 
   return (
-    <Link
-      onClick={() => setRecep(chatData)}
+    <NavLink
+      state={{ chatData: chatData }}
       to={`/${chatData?.username || chatData?.phoneNumber}`}
-      className="flex items-center 
-      w-full py-3 border-b cursor-pointer justify-between"
+      className={(navData) =>
+        `flex items-center w-full py-3 border-b cursor-pointer justify-between ${
+          navData.isActive ? "bg-gray-100" : ""
+        }`
+      }
     >
       <div className="flex items-center">
         <div className="relative">
@@ -87,7 +92,7 @@ const User = ({ chat }) => {
       ) : (
         ""
       )}
-    </Link>
+    </NavLink>
   );
 };
 

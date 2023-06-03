@@ -14,7 +14,7 @@ const Dashboard = () => {
   const [chats, setChats] = useLocalStorage("chats", []);
   const [modal, setModal] = useState(false);
 
-  const { logout, user, isProfileOpen, setIsProfileOpen, recep } = useAuth();
+  const { logout, user, isProfileOpen, setIsProfileOpen } = useAuth();
 
   const { chatId } = useParams();
 
