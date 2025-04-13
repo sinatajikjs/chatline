@@ -1,5 +1,7 @@
 # Chatline
 
+This project is currently not functioning as intended due to recent changes in Firebase's pricing policies.
+
 Chatline is a full-stack chat platform developed with React.js and Firebase.
 
 ## Table of Contents
